@@ -1,1 +1,2 @@
-export {waitTimer} from "./waitTimer"
+export { waitTimer } from './waitTimer';
+export { soundEngine } from '../services/soundEngine';

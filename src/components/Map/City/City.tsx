@@ -11,7 +11,7 @@ const City = () => {
   const options = [marion, merchant, knight];
 
   return (
-    <>
+    <div className="relative flex flex-row items-center justify-around w-full h-full flex-1 self-stretch p-6">
       {cityNPCs.map((NPC, index) => (
         <Npc key={index} NPC={{ ...NPC, dialogOptions: options[index] }} />
       ))}
@@ -21,7 +21,7 @@ const City = () => {
           <Dialog />
         </Centerer>
       )}
-    </>
+    </div>
   );
 };
 

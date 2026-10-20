@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { soundEngine } from '../../../services/soundEngine';
 
 interface Props {
   track: string;
@@ -7,23 +8,25 @@ interface Props {
 export const useMusicPlayer = ({ track }: Props) => {
   const [musicIsPlaying, setMusicIsPlaying] = useState(true);
 
+  useEffect(() => {
+    if (track && musicIsPlaying) {
+      soundEngine.playMusic(track);
+    }
+  }, [track, musicIsPlaying]);
+
   const handleOnClick = () => {
-    setMusicIsPlaying((current) => !current);
-    const music = document.getElementById('music') as HTMLAudioElement;
-    if (music) {
-      music.volume = 0.31;
-      if (musicIsPlaying == false) music.play();
-      else music.pause();
+    if (musicIsPlaying) {
+      soundEngine.pauseMusic();
+      setMusicIsPlaying(false);
+    } else {
+      if (track) {
+        soundEngine.playMusic(track);
+      } else {
+        soundEngine.resumeMusic();
+      }
+      setMusicIsPlaying(true);
     }
   };
-
-  useEffect(() => {
-    const music = document.getElementById('music') as HTMLAudioElement;
-    music.volume = 0.31;
-    if (musicIsPlaying == false && music) {
-      music.pause();
-    }
-  }, [track]);
 
   return { musicIsPlaying, handleOnClick };
 };

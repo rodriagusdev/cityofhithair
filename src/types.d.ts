@@ -25,6 +25,15 @@ export interface Unit {
   soundHitted: () => void;
   soundDeath: () => void;
   skills: Array<skill>;
+  statuses?: Array<ActiveStatusEffect>;
+}
+
+export interface ActiveStatusEffect {
+  id: string;
+  name: string;
+  turnsRemaining: number;
+  attackDelta?: number;
+  defenseDelta?: number;
 }
 
 export interface Player extends Unit {

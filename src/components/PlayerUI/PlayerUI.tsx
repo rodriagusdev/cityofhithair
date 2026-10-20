@@ -1,59 +1,32 @@
-import { Item } from '../../types';
 import { Note } from '../Note';
-import { itemIcons } from '../../data/stats';
 import { Centerer } from '../Centerer';
 import { useDialogStore, usePlayerStore } from '../../stores';
-import styles from '../../styles/PlayerUI.module.scss';
+import PlayerVitals from './PlayerVitals';
+import PlayerStats from './PlayerStats';
+import PlayerInventory from './PlayerInventory';
 
 const PlayerUI = () => {
-  const getPlayerHero = usePlayerStore((state) => state.player);
-  const getPlayerInventory = usePlayerStore((state) => state.inventory);
-  const getGold = usePlayerStore((state) => state.gold);
+  const player = usePlayerStore((state) => state.player);
+  const inventory = usePlayerStore((state) => state.inventory);
+  const gold = usePlayerStore((state) => state.gold);
   const isInNote = useDialogStore((state) => state.isInNote);
 
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col items-center gap-2 w-full shrink-0 p-2.5 bg-stone-950/85 backdrop-blur-md border border-stone-800 rounded-lg shadow-xl text-stone-200">
       {isInNote && (
         <Centerer>
           <Note />
         </Centerer>
       )}
-      <div>
-        <h4>{getPlayerHero.name}</h4>
-        <img className={styles.portrait} src={getPlayerHero.portrait} />
-      </div>
 
-      <div className={styles.stats}>
-        <div>
-          <img src={itemIcons.playergold} alt={'gold'} />
-          <p>{getGold}</p>
-        </div>
+      {/* Hero Vitals & Portrait */}
+      <PlayerVitals player={player} />
 
-        <div>
-          <img src={itemIcons.attack} alt={'damage'} />
-          <p>{getPlayerHero.attack}</p>
-        </div>
+      {/* Core Attributes */}
+      <PlayerStats player={player} gold={gold} />
 
-        <div>
-          <img src={itemIcons.defense} alt={'armor'} />
-          <p>{getPlayerHero.defense}</p>
-        </div>
-
-        {getPlayerHero.darkMastery > 0 && (
-          <div>
-            <img src={itemIcons.darktome} alt={'darkmagic'} />
-            <p>{getPlayerHero.darkMastery}</p>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.inventory}>
-        {getPlayerInventory
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((item: Item, index: number) => (
-            <img src={item.image} key={index} onClick={item.fn} />
-          ))}
-      </div>
+      {/* Equipment & Pouch */}
+      <PlayerInventory inventory={inventory} />
     </div>
   );
 };

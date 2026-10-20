@@ -269,7 +269,7 @@ export const mausoleumData: Array<Unit> = [
 
 export const darkPassageData: Array<Unit> = [
   {
-    id: 12,
+    id: 122,
     name: 'The Cannibal',
     health: 60,
     maxHealth: 60,

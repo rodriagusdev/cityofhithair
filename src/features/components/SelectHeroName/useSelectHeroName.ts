@@ -12,14 +12,17 @@ export const useSelectHeroName = () => {
   };
 
   const updateName = () => {
-    if (getClass == 'knight') {
-      const updateHero = { ...knightStats, name: tempName };
+    const trimmed = tempName.trim();
+    if (getClass === 'knight') {
+      const chosenName = trimmed || 'Sir Alistair';
+      const updateHero = { ...knightStats, name: chosenName };
       establishInitialHero(updateHero);
-    } else if (getClass == 'darkmage') {
-      const updateHero = { ...wizardStats, name: tempName };
+    } else if (getClass === 'darkmage') {
+      const chosenName = trimmed || 'Malakor';
+      const updateHero = { ...wizardStats, name: chosenName };
       establishInitialHero(updateHero);
     }
   };
 
-  return {handleOnChange, updateName};
+  return { handleOnChange, updateName };
 };

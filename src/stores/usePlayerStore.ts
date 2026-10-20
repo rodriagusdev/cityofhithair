@@ -22,19 +22,24 @@ interface Actions {
     value: number
   ) => void;
   updateSelectedSkill: (skill: skill) => void;
+  updatePlayerVitals: (health: number, magic: number) => void;
 }
 
 const usePlayerStore = create<State & Actions>((set, get) => ({
   player: { name: '' } as Player,
   class: '',
   inventory: [],
-  gold: 10000,
+  gold: 100,
   healthPotions: 2,
   manaPotions: 1,
   selectedSkill: {} as skill,
   establishInitialHero: (hero: Player) =>
     set(() => ({
       player: hero,
+    })),
+  updatePlayerVitals: (health: number, magic: number) =>
+    set((state) => ({
+      player: { ...state.player, health, magic },
     })),
   updatePlayerHero: (stat: 'darkMastery' | 'attack', value: number) => {
     const getHero = get().player;

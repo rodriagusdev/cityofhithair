@@ -50,6 +50,15 @@ interface Actions {
     id: number
   ) => Promise<Array<Unit>>;
   returnToHithair: () => void;
+  travelTo: (
+    destination:
+      | 'hithair'
+      | 'cemetery'
+      | 'mausoleum'
+      | 'darkPassage'
+      | 'lostGallery'
+      | 'heartPrison'
+  ) => void;
   updateLevelsCompletion: (level: string) => void;
   updateCannibalDied: () => void;
 }
@@ -88,31 +97,66 @@ const useLevelsStore = create<State & Actions>((set, get) => ({
       resolve(updateEnemies);
     }),
   returnToHithair: () =>
-    set((state) => ({
+    set(() => ({
       isInHithair: true,
       isInCemetery: false,
       isInMausoleum: false,
       isInDarkPassage: false,
       isInLostGallery: false,
       isInHeartPrison: false,
+      levelName: 'City of Hithair',
     })),
+  travelTo: (dest) => {
+    const levelNames = {
+      hithair: 'City of Hithair',
+      cemetery: 'Cemetery',
+      mausoleum: 'Mausoleum',
+      darkPassage: 'Dark Passage',
+      lostGallery: 'Lost Gallery',
+      heartPrison: "Heart's Prison",
+    };
+
+    set(() => ({
+      isInHithair: dest === 'hithair',
+      isInCemetery: dest === 'cemetery',
+      isInMausoleum: dest === 'mausoleum',
+      isInDarkPassage: dest === 'darkPassage',
+      isInLostGallery: dest === 'lostGallery',
+      isInHeartPrison: dest === 'heartPrison',
+      levelName: levelNames[dest] || 'City of Hithair',
+    }));
+  },
   updateLevelsCompletion: (level: string) => {
-    const getLevels = get().levelsCompletion;
-    let key: string = '';
+    let key: keyof State['levelsCompletion'] | null = null;
 
     switch (level) {
       case 'cemetery':
+      case 'cemeteryEnemies':
         key = 'cemetery';
+        break;
       case 'mausoleum':
+      case 'mausoleumEnemies':
         key = 'mausoleum';
+        break;
       case 'dark passage':
-        key = 'dark passage';
+      case 'darkPassage':
+      case 'dPassageEnemies':
+        key = 'darkPassage';
+        break;
       case 'lost gallery':
-        key = 'lost gallery';
+      case 'lostGallery':
+      case 'lostGalleryEnemies':
+        key = 'lostGallery';
+        break;
+      default:
+        break;
     }
 
-    const updateLevel = { ...getLevels, [key]: 1 };
-    set(() => ({ levelsCompletion: updateLevel }));
+    if (key) {
+      set((state) => ({
+        levelsCompletion: { ...state.levelsCompletion, [key!]: 1 },
+      }));
+    }
   },
   updateCannibalDied: () => {
     set(() => ({ cannibalDied: true }));

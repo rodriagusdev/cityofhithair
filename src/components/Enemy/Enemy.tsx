@@ -1,3 +1,4 @@
+import React from 'react';
 import { useBattleStore, usePlayerStore } from '../../stores';
 import { Unit } from '../../types';
 
@@ -5,7 +6,7 @@ interface Props {
   enemy: Unit;
 }
 
-const Enemy = ({ enemy }: Props) => {
+const Enemy: React.FC<Props> = ({ enemy }) => {
   const { updateFightingStatus, updateBoardEnemy, updateBoardPlayer } =
     useBattleStore();
   const getPlayerHero = usePlayerStore((state) => state.player);
@@ -19,17 +20,28 @@ const Enemy = ({ enemy }: Props) => {
   };
 
   return (
-    <>
-      <img
-        src={enemy.portraitFace ? enemy.portraitFace : enemy.portrait}
-        onClick={getSelected}
-        alt={enemy.name}
-      />
-
-      <div>
-        <h4>{enemy.name}</h4>
+    <div
+      onClick={getSelected}
+      className="flex flex-col items-center gap-2 group cursor-pointer transition-transform duration-200 hover:-translate-y-1"
+    >
+      <div className="relative overflow-hidden rounded-full border-2 border-red-950 bg-stone-950 p-1 group-hover:border-red-600 group-hover:ring-2 group-hover:ring-red-600/40 transition-all duration-300 shadow-xl">
+        <img
+          src={enemy.portraitFace ? enemy.portraitFace : enemy.portrait}
+          alt={enemy.name}
+          className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full group-hover:scale-110 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 rounded-full bg-red-950/20 group-hover:bg-transparent transition-colors" />
       </div>
-    </>
+
+      <div className="text-center">
+        <h4 className="font-cinzel text-xs md:text-sm font-bold tracking-wider text-white uppercase drop-shadow-sm">
+          {enemy.name}
+        </h4>
+        <span className="font-cinzel text-[10px] text-stone-500 uppercase tracking-widest group-hover:text-stone-400">
+          Engage
+        </span>
+      </div>
+    </div>
   );
 };
 

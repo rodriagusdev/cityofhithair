@@ -2,7 +2,7 @@ import { skillsIcons } from './icons';
 
 export const attack = {
   name: 'Attack',
-  description: 'Basic attack.',
+  description: 'Basic physical attack.',
   image: skillsIcons.attack,
   cost: 0,
 };
@@ -10,8 +10,8 @@ export const attack = {
 export const defend = {
   name: 'Defend',
   description:
-    'Adds an aditional point in defense. Each point in defense decreases damage by 10%. Consumes the turn.' +
-    '\nSelf Cast: Will fire inmediately.',
+    'Adds 1 point to defense for 3 turns. Each point in defense reduces incoming damage by 10%. Consumes 2 Spiritual Power.' +
+    '\nSelf Cast: Will fire immediately.',
   image: skillsIcons.defend,
   cost: 2,
 };
@@ -19,8 +19,8 @@ export const defend = {
 export const frenzy = {
   name: 'Frenzy',
   description:
-    'Strong buff that enhances your damage by seven but reduces your defenses by two points. Consumes the turn.' +
-    '\nSelf Cast: Will fire inmediately.',
+    'Strong buff that enhances your damage by 7 but reduces your defense by 2 points for 3 turns. Consumes 2 Spiritual Power.' +
+    '\nSelf Cast: Will fire immediately.',
   image: skillsIcons.frenzy,
   cost: 2,
 };
@@ -28,14 +28,14 @@ export const frenzy = {
 export const sacrifice = {
   name: 'Sacrifice',
   description:
-    "Performs a risky attack that destroys the oponent's armor permanently leaving it flanked, but at the cost of 11 health.",
+    "Performs a strike dealing weapon damage that permanently shatters the opponent's armor for 3 turns, but at the cost of 11 health and 2 Spiritual Power.",
   image: skillsIcons.sacrifice,
   cost: 2,
 };
 
 export const drinkLifePotion = {
   name: 'Potion Of Life',
-  description: 'Heals by 10. Does not consumes the turn.',
+  description: 'Heals 15 Health Points. Does not consume the turn.',
   image: skillsIcons.healthPotion,
   cost: 0,
 };
@@ -43,7 +43,7 @@ export const drinkLifePotion = {
 export const drinkManaPotion = {
   name: 'Potion Of Magic',
   description:
-    'Restores 3 points of spiritual power. Does not consumes the turn.',
+    'Restores 3 points of spiritual power. Does not consume the turn.',
   image: skillsIcons.manaPotion,
   cost: 0,
 };

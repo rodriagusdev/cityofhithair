@@ -1,1 +1,2 @@
-export {default as HeroSelection} from "./HeroSelection"
+export { default as HeroSelection } from './HeroSelection';
+export { HeroCard } from './HeroCard';

@@ -8,17 +8,19 @@ const MusicPlayer = ({ track }: Props) => {
   const { musicIsPlaying, handleOnClick } = useMusicPlayer({ track });
 
   return (
-    <div className="musicPlayer">
-      <audio id="music" autoPlay loop key={track}>
-        <source src={`/${track}.mp3`} type="audio/mpeg" />
-      </audio>
-
-      <button onClick={handleOnClick}>
+    <div className="fixed top-3 left-3 z-40">
+      <button
+        onClick={handleOnClick}
+        type="button"
+        title={musicIsPlaying ? 'Mute Atmosphere' : 'Unmute Atmosphere'}
+        aria-label={musicIsPlaying ? 'Mute Music' : 'Unmute Music'}
+        className="flex items-center justify-center p-2 rounded-full bg-stone-950/90 hover:bg-stone-900 border border-red-950 hover:border-red-700 text-red-600 hover:text-red-500 transition-all shadow-lg cursor-pointer"
+      >
         {musicIsPlaying ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
           >
             <path
@@ -29,8 +31,8 @@ const MusicPlayer = ({ track }: Props) => {
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
           >
             <path

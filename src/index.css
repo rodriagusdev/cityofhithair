@@ -1,81 +1,187 @@
-:root {
-  font-family: 'Cinzel', serif;
-  line-height: 1.5;
-  overflow-x: hidden;
-  font-size: 16px;
-  font-weight: 400;
+@import "tailwindcss";
 
-  --border-color: #393837;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+@theme {
+  --font-cinzel: 'Cinzel', serif;
+  --font-cormorant: 'Cormorant Upright', serif;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+/* Base resets in @layer base so any Tailwind utility can override them cleanly */
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-height: 100%;
+    background-color: #0c0a09;
+    color: #f5f5f4;
+    font-family: var(--font-cinzel), serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-* {
-  margin: 0;
-}
+  #root {
+    height: 100%;
+    min-height: 100%;
+  }
 
-html, body {
-  min-height: 100%;
-  height: auto;
-}
-
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-
-input, button, textarea, select {
-  font: inherit;
-  border: none;
-}
-
-button {
-  cursor: pointer;
-  background-color: var(--border-color);
-  width: 100%;
-  border-radius: 5px;
-  border: 1px solid transparent;
-  transition: .2s;
-}
-
-button:hover {
-  border: 1px solid #fff;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
-}
-
-#root, #__next {
-  isolation: isolate;
-}
-
-@media (min-width: 280px) and (max-width: 480px) {
-  :root {
-    overflow-y: auto;
-    font-size: 14px;
+  button {
+    cursor: pointer;
   }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-  :root {
-    font-size: 18px;
+/* Dark Gothic Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(14, 13, 17, 0.6);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3630;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5d4f45;
+}
+
+/* Universal Sprite Sheet Step Animation (Infinite Loop) */
+@keyframes sprite-step-anim {
+  from {
+    transform: translateX(0);
   }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* One-shot Sprite Sheet Step Animation (Holds on final frame without disappearing) */
+@keyframes sprite-step-anim-hold {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--sprite-end-offset, -91.6667%));
+  }
+}
+
+/* Darkest Dungeon Dramatic Melee Impact Camera Punch */
+@keyframes combat-camera-punch {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.035) translateY(-3px) rotate(-0.25deg); }
+  45% { transform: scale(1.015) translateY(2px) rotate(0.2deg); }
+  70% { transform: scale(1.008) translateY(-1px); }
+  100% { transform: scale(1) translateY(0) rotate(0); }
+}
+
+.animate-camera-punch {
+  animation: combat-camera-punch 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Combat procedural reactions */
+@keyframes combat-lunge-right {
+  0% { transform: translateX(0); }
+  35% { transform: translateX(24px) scale(1.06); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes combat-lunge-left {
+  0% { transform: translateX(0); }
+  35% { transform: translateX(-24px) scale(1.06); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes combat-hit-recoil {
+  0% { transform: translateX(0); filter: brightness(1); }
+  20% { transform: translateX(-8px); filter: brightness(1.8) drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); filter: brightness(1); }
+}
+
+@keyframes combat-victory-bounce {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.4)); }
+  50% { transform: translateY(-8px); filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.8)); }
+}
+
+.animate-combat-lunge-right {
+  animation: combat-lunge-right 0.6s ease-out;
+}
+
+.animate-combat-lunge-left {
+  animation: combat-lunge-left 0.6s ease-out;
+}
+
+.animate-combat-hit {
+  animation: combat-hit-recoil 0.5s ease-in-out;
+}
+
+.animate-combat-victory {
+  animation: combat-victory-bounce 1s infinite ease-in-out;
+}
+
+@keyframes float-combat-text {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.2);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-24px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+  }
+}
+
+.animate-float-combat-text {
+  animation: float-combat-text 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Darkest Dungeon Combat Clash Positions - Point-blank at arm's length */
+.combat-clash-hero-strike {
+  transform: translateY(7.5rem) scale(1.28);
+}
+@media (min-width: 768px) {
+  .combat-clash-hero-strike {
+    transform: translateX(calc(37.5vw - 144px)) translateY(0) scale(1.28);
+  }
+}
+
+.combat-clash-enemy-receive {
+  transform: translateY(-2.5rem) scale(1.12);
+}
+@media (min-width: 768px) {
+  .combat-clash-enemy-receive {
+    transform: translateX(calc(-12.5vw + 48px)) translateY(0) scale(1.12);
+  }
+}
+
+.combat-clash-enemy-strike {
+  transform: translateY(-7.5rem) scale(1.28);
+}
+@media (min-width: 768px) {
+  .combat-clash-enemy-strike {
+    transform: translateX(calc(-37.5vw + 144px)) translateY(0) scale(1.28);
+  }
+}
+
+.combat-clash-hero-receive {
+  transform: translateY(2.5rem) scale(1.12);
+}
+@media (min-width: 768px) {
+  .combat-clash-hero-receive {
+    transform: translateX(calc(12.5vw - 48px)) translateY(0) scale(1.12);
+  }
+}
+
+.combat-clash-neutral {
+  transform: translateX(0) translateY(0) scale(1);
 }

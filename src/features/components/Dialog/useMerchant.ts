@@ -107,7 +107,7 @@ export const useMerchant = () => {
     },
   ];
 
-  const [merchantInventory, setMerchantInventory] = useState(itemsInStore);
+  const [merchantInventory] = useState(itemsInStore);
 
   return { merchantInventory };
 };
