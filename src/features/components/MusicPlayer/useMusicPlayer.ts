@@ -6,26 +6,23 @@ interface Props {
 }
 
 export const useMusicPlayer = ({ track }: Props) => {
-  const [musicIsPlaying, setMusicIsPlaying] = useState(true);
+  const [musicIsPlaying, setMusicIsPlaying] = useState(() => soundEngine.isMusicPlaying());
 
   useEffect(() => {
-    if (track && musicIsPlaying) {
+    const unsubscribe = soundEngine.subscribeMusic((isPlaying) => {
+      setMusicIsPlaying(isPlaying);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (track) {
       soundEngine.playMusic(track);
     }
-  }, [track, musicIsPlaying]);
+  }, [track]);
 
   const handleOnClick = () => {
-    if (musicIsPlaying) {
-      soundEngine.pauseMusic();
-      setMusicIsPlaying(false);
-    } else {
-      if (track) {
-        soundEngine.playMusic(track);
-      } else {
-        soundEngine.resumeMusic();
-      }
-      setMusicIsPlaying(true);
-    }
+    soundEngine.toggleMusic();
   };
 
   return { musicIsPlaying, handleOnClick };

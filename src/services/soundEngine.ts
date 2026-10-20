@@ -6,7 +6,52 @@ export interface SoundOptions {
   loop?: boolean;
 }
 
-type MusicStateListener = (isPlaying: boolean, track: string | null) => void;
+export type MusicStateListener = (isPlaying: boolean, track: string | null) => void;
+
+/**
+ * Resolves a track identifier or relative path to a valid public asset URL,
+ * respecting Vite's base path in production (e.g. GitHub Pages at /cityofhithair/).
+ */
+export function resolveMusicUrl(track: string): string {
+  if (!track) return '';
+
+  // Already an absolute external URL, data URI, or blob
+  if (/^(?:https?:)?\/\//i.test(track) || track.startsWith('data:') || track.startsWith('blob:')) {
+    return track;
+  }
+
+  // Vite base URL (e.g. '/cityofhithair/' or '/')
+  const base =
+    typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL
+      ? import.meta.env.BASE_URL
+      : '/';
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+
+  let clean = track.trim();
+
+  // If already prefixed with normalizedBase, return directly
+  if (clean.startsWith(normalizedBase)) {
+    return clean;
+  }
+
+  // Strip leading slashes or relative dot prefixes
+  while (clean.startsWith('/') || clean.startsWith('./')) {
+    clean = clean.startsWith('./') ? clean.slice(2) : clean.slice(1);
+  }
+
+  // Check if track was passed starting with the base segment without a leading slash
+  const baseTrimmed = normalizedBase.replace(/^\/+|\/+$/g, '');
+  if (baseTrimmed && clean.startsWith(`${baseTrimmed}/`)) {
+    return `/${clean}`;
+  }
+
+  // Append .mp3 extension if missing
+  if (!clean.toLowerCase().endsWith('.mp3') && !clean.includes('.')) {
+    clean = `${clean}.mp3`;
+  }
+
+  return `${normalizedBase}${clean}`;
+}
 
 class SoundEngine {
   private currentMusicHowl: Howl | null = null;
@@ -14,30 +59,32 @@ class SoundEngine {
   private musicVolume = 0.31;
   private sfxVolume = 1.0;
   private isMuted = false;
-  private isMusicPaused = false;
+  private isMusicPausedByUser = false;
+  private isAutoplayBlocked = false;
   private sfxCache = new Map<string, Howl>();
   private musicListeners = new Set<MusicStateListener>();
+  private unlockListenersAttached = false;
+  private boundInteractionHandler: (() => void) | null = null;
 
   constructor() {
     Howler.autoUnlock = true;
+    this.attachUnlockListeners();
   }
 
   // --- Music Management ---
 
   /**
    * Plays a background music track by track name (e.g. 'hithair', 'dungeons') or direct path.
+   * Handles path resolution for production base URLs and browser autoplay policies.
    */
   public playMusic(track: string, options?: SoundOptions): void {
     if (!track) return;
 
-    // Resolve track URL if given a bare name
-    const src = track.startsWith('/') || track.startsWith('http') || track.endsWith('.mp3')
-      ? track
-      : `/${track}.mp3`;
+    const resolvedSrc = resolveMusicUrl(track);
 
-    // If the same track is already playing or paused
+    // If the same track is requested and Howl exists
     if (this.currentMusicTrack === track && this.currentMusicHowl) {
-      if (this.isMusicPaused) {
+      if (!this.isMusicPausedByUser && !this.isMusicPlaying()) {
         this.resumeMusic();
       }
       return;
@@ -51,24 +98,41 @@ class SoundEngine {
     }
 
     this.currentMusicTrack = track;
-    this.isMusicPaused = false;
+
+    // If the user has explicitly chosen to mute/pause music, don't auto-start
+    if (this.isMusicPausedByUser) {
+      this.notifyMusicListeners();
+      return;
+    }
 
     const volume = options?.volume ?? this.musicVolume;
 
     const howl = new Howl({
-      src: [src],
+      src: [resolvedSrc],
       html5: true, // Use HTML5 Audio for streaming larger music files
+      format: ['mp3'],
+      preload: true,
       loop: options?.loop ?? true,
       volume: this.isMuted ? 0 : volume,
+      onplay: () => {
+        this.isAutoplayBlocked = false;
+        this.notifyMusicListeners();
+      },
+      onpause: () => {
+        this.notifyMusicListeners();
+      },
+      onstop: () => {
+        this.notifyMusicListeners();
+      },
       onloaderror: (_id, err) => {
-        console.warn(`[SoundEngine] Failed to load music: ${src}`, err);
+        console.warn(`[SoundEngine] Failed to load music from "${resolvedSrc}":`, err);
       },
       onplayerror: (_id, err) => {
-        console.warn(`[SoundEngine] Play error for music: ${src}`, err);
-        // Autoplay may be blocked; retry on first user interaction if needed
-        howl.once('unlock', () => {
-          howl.play();
-        });
+        console.warn(`[SoundEngine] Play error for music "${resolvedSrc}":`, err);
+        // Autoplay may be blocked by browser; will unlock on first user interaction
+        this.isAutoplayBlocked = true;
+        this.attachUnlockListeners();
+        this.notifyMusicListeners();
       },
     });
 
@@ -77,20 +141,65 @@ class SoundEngine {
     this.notifyMusicListeners();
   }
 
-  public pauseMusic(): void {
-    if (this.currentMusicHowl && this.currentMusicHowl.playing()) {
-      this.currentMusicHowl.pause();
-      this.isMusicPaused = true;
-      this.notifyMusicListeners();
+  /**
+   * Unlocks audio on user interaction and resumes pending music if autoplay was blocked.
+   */
+  public unlockAudio(): void {
+    // Resume Web Audio AudioContext if suspended
+    if (Howler.ctx && Howler.ctx.state === 'suspended') {
+      Howler.ctx.resume().catch(() => {});
+    }
+
+    // Resume or start music if user hasn't explicitly muted it
+    if (!this.isMusicPausedByUser) {
+      if (this.currentMusicHowl && !this.isMusicPlaying()) {
+        this.currentMusicHowl.play();
+      } else if (this.currentMusicTrack && !this.currentMusicHowl) {
+        this.playMusic(this.currentMusicTrack);
+      }
     }
   }
 
-  public resumeMusic(): void {
-    if (this.currentMusicHowl) {
-      this.currentMusicHowl.play();
-      this.isMusicPaused = false;
-      this.notifyMusicListeners();
+  private attachUnlockListeners(): void {
+    if (this.unlockListenersAttached || typeof window === 'undefined') return;
+    this.unlockListenersAttached = true;
+
+    const handleInteraction = () => {
+      this.unlockAudio();
+      this.detachUnlockListeners();
+    };
+
+    this.boundInteractionHandler = handleInteraction;
+    const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+    events.forEach((ev) => {
+      window.addEventListener(ev, handleInteraction, { capture: true, passive: true });
+    });
+  }
+
+  private detachUnlockListeners(): void {
+    if (!this.boundInteractionHandler || typeof window === 'undefined') return;
+    const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+    events.forEach((ev) => {
+      window.removeEventListener(ev, this.boundInteractionHandler!, { capture: true });
+    });
+    this.boundInteractionHandler = null;
+    this.unlockListenersAttached = false;
+  }
+
+  public pauseMusic(byUser = true): void {
+    if (byUser) {
+      this.isMusicPausedByUser = true;
     }
+    if (this.currentMusicHowl && this.currentMusicHowl.playing()) {
+      this.currentMusicHowl.pause();
+    }
+    this.notifyMusicListeners();
+  }
+
+  public resumeMusic(): void {
+    this.isMusicPausedByUser = false;
+    this.unlockAudio();
+    this.notifyMusicListeners();
   }
 
   public stopMusic(): void {
@@ -99,27 +208,31 @@ class SoundEngine {
       this.currentMusicHowl.unload();
       this.currentMusicHowl = null;
       this.currentMusicTrack = null;
-      this.isMusicPaused = false;
+      this.isMusicPausedByUser = false;
       this.notifyMusicListeners();
     }
   }
 
   public toggleMusic(): boolean {
     if (this.isMusicPlaying()) {
-      this.pauseMusic();
+      this.pauseMusic(true);
       return false;
-    } else if (this.currentMusicHowl) {
+    } else {
       this.resumeMusic();
       return true;
-    } else if (this.currentMusicTrack) {
-      this.playMusic(this.currentMusicTrack);
-      return true;
     }
-    return false;
   }
 
   public isMusicPlaying(): boolean {
     return Boolean(this.currentMusicHowl && this.currentMusicHowl.playing());
+  }
+
+  public getIsMusicPausedByUser(): boolean {
+    return this.isMusicPausedByUser;
+  }
+
+  public isAutoplayWaiting(): boolean {
+    return this.isAutoplayBlocked && !this.isMusicPausedByUser && !this.isMusicPlaying();
   }
 
   public getCurrentTrack(): string | null {

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTransition, animated, useSpring } from '@react-spring/web';
+import { soundEngine } from '../../services/soundEngine';
 
 const presentationText =
   "The townfolk of Hithair requested help to the city of Kimvaema in the west. After a few denials, they came to us. They claim an ancient evil has been unleashed again, that its awakening made the bestial dark knights more aggressive, but it couldn't be further from the truth. Ignore them. Since their great hero Tamoé fell, they became deranged and fearful. This evil will never go out, but your target will.\n\nA man named Nicolai entered Hithair in search of something he concealed to himself, he was seen here in Balfiera also. After a while, the defenders in the mausoleum were swarmed by hordes of skeletons and dark knights led by an entity called The Cannibal. Of Nicolai nothing else is heard yet, but the survivors tell of a 'hole' in the mausoleum that leads to forgotten dungeons. Somehow, Nicolai passed unseen and opened this dark passage that was known only to him. This is his work, not of an ancient evil. You must get information of this man at all costs. We fear he might come one day to Balfiera. Confrontation is not needed. You must survive and get clues of the man's whereabouts. Hithair is not a priority.";
@@ -23,6 +24,8 @@ const Presentation = ({ setPresentation }: Props) => {
   });
 
   const closePresentation = () => {
+    // Explicit user click guarantees audio playback starts without autoplay rejection
+    soundEngine.unlockAudio();
     setVisible(false);
     setTimeout(() => {
       setPresentation(false);
