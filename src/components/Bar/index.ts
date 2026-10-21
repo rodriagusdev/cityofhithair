@@ -1,1 +1,1 @@
-export {default as Bar} from "./Bar";
+export { default as Bar, default as ResourceBar, default as StatBar } from './Bar';

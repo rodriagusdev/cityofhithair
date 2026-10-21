@@ -12,11 +12,11 @@ export const PlayerVitals: React.FC<PlayerVitalsProps> = ({ player }) => {
       {/* Hero Portrait */}
       <div className="relative group shrink-0">
         <img
-          src={player.portrait}
+          src={player.portraitFace}
           alt={player.name}
-          className="w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-lg border-2 border-stone-700 bg-stone-950 p-0.5 shadow-md transition-transform duration-300 group-hover:border-red-700/80"
+          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border-2 border-stone-700 bg-stone-950 p-0.5 shadow-md transition-transform duration-300 group-hover:border-red-700/80"
         />
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-stone-950/50 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Hero Name & Health/Mana Bars */}

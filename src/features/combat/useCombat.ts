@@ -8,8 +8,8 @@ import spellfrenzy from '../../assets/sound/spellfrenzy.wav';
 import spellvulnerability from '../../assets/sound/spellvulnerability.wav';
 import spellweakness from '../../assets/sound/spellweakness.wav';
 import warning from '../../assets/sound/warning.ogg';
-import parrySound from '../../assets/sound/parrysound.wav';
-import { waitTimer } from '../../helpers';
+import parrySound from '../../assets/sound/parrysound.mp3';
+import { waitTimer } from '../../utils';
 import { soundEngine } from '../../services/soundEngine';
 import {
   useAnnouncerStore,
@@ -19,7 +19,7 @@ import {
 } from '../../stores';
 import { Action, Player, Unit } from '../../types';
 import { skillsIcons } from '../../data/skills';
-import { useLoot } from '../components/Board/useLoot';
+import { useLoot } from './useLoot';
 import { calculateDamage, combatActions, tickUnitStatuses } from './combatEngine';
 import { decideEnemyIntent, getEnemyStaggerThreshold } from './enemyAi';
 import { CombatActionResult } from './types';
@@ -47,6 +47,7 @@ export const useCombat = () => {
     setPlayerActionsRemaining,
     updatePhase,
     addFloatingText,
+    triggerScreenShake,
   } = useBattleStore();
 
   const { handleAnnouncer, updateAnnouncerAction } = useAnnouncerStore();
@@ -58,6 +59,7 @@ export const useCombat = () => {
     updatePotion,
     establishInitialHero,
     updatePlayerVitals,
+    updateGold,
   } = usePlayerStore();
 
   const isResolvingRef = useRef(false);
@@ -71,8 +73,8 @@ export const useCombat = () => {
   ) => {
     const actionData: Action = {
       text,
-      attackerImg: attacker.portraitFace || attacker.portrait,
-      receiverImg: target.portraitFace || target.portrait,
+      attackerImg: attacker.portraitFace,
+      receiverImg: target.portraitFace,
       skillIcon: icon,
     };
     updateAnnouncerAction(actionData);
@@ -82,12 +84,18 @@ export const useCombat = () => {
     }, 1500);
   };
 
-  const playActionSound = (actionName: string) => {
+  const playActionSound = (actionName: string, caster?: Unit | Player) => {
     switch (actionName) {
       case 'Attack':
       case 'Dark Magic: Attack':
       case 'Sacrifice':
-        soundEngine.playSfx(swordSound);
+        if (caster?.sounds?.attack) {
+          soundEngine.playSfx(caster.sounds.attack);
+        } else if (typeof caster?.soundAttack === 'function') {
+          caster.soundAttack();
+        } else {
+          soundEngine.playSfx(swordSound);
+        }
         break;
       case 'Defend':
         soundEngine.playSfx(spelldefend);
@@ -111,13 +119,20 @@ export const useCombat = () => {
         soundEngine.playSfx(drinkpotionmana);
         break;
       default:
+        if (caster?.sounds?.attack) {
+          soundEngine.playSfx(caster.sounds.attack);
+        } else if (typeof caster?.soundAttack === 'function') {
+          caster.soundAttack();
+        }
         break;
     }
   };
 
   const handleEnemyDeath = async (enemy: Unit) => {
     updatePhase('victory');
-    if (typeof enemy.soundDeath === 'function') {
+    if (enemy.sounds?.death) {
+      soundEngine.playSfx(enemy.sounds.death);
+    } else if (typeof enemy.soundDeath === 'function') {
       enemy.soundDeath();
     }
 
@@ -143,7 +158,9 @@ export const useCombat = () => {
 
   const handlePlayerDeath = (player: Player) => {
     updatePhase('defeat');
-    if (typeof player.soundDeath === 'function') {
+    if (player.sounds?.death) {
+      soundEngine.playSfx(player.sounds.death);
+    } else if (typeof player.soundDeath === 'function') {
       player.soundDeath();
     }
     // Sync dead player with player store so GameOver overlay displays
@@ -157,6 +174,31 @@ export const useCombat = () => {
   const attemptParry = useCallback((): boolean => {
     const phase = useBattleStore.getState().phase;
     if (phase !== 'enemy_telegraph') return false;
+
+    const enemyIntent = useBattleStore.getState().enemyIntent;
+    const boardPlayer = useBattleStore.getState().boardPlayer;
+    const isSpell = Boolean(
+      enemyIntent?.isSpell ||
+      enemyIntent?.actionName === 'Drain Life' ||
+      enemyIntent?.actionName === 'Weakness' ||
+      enemyIntent?.actionName === 'Vulnerability'
+    );
+    const playerSp = boardPlayer?.magic ?? 0;
+
+    // Cannot parry spells if player has 0 spiritual power
+    if (isSpell && playerSp <= 0) {
+      soundEngine.playSfx(warning);
+      setParryState({
+        canParry: false,
+        feedbackText: 'NO SPIRITUAL POWER!',
+      });
+      addFloatingText({
+        target: 'Player',
+        text: 'CANNOT PARRY SPELLS (0 SP)!',
+        type: 'status',
+      });
+      return false;
+    }
 
     const state = useBattleStore.getState().parryState;
     if (state.comboBroken || state.parryAttempted || !state.canParry) {
@@ -264,6 +306,19 @@ export const useCombat = () => {
     const playerHeroCopy = { ...currentPlayer };
     const actionDef = combatActions[intent.actionName] || combatActions.Attack;
 
+    const isSpell = Boolean(
+      intent.isSpell ||
+      intent.actionName === 'Drain Life' ||
+      intent.actionName === 'Weakness' ||
+      intent.actionName === 'Vulnerability'
+    );
+    const spellCost = isSpell
+      ? (actionDef.cost?.magic ?? (intent.actionName === 'Drain Life' ? 3 : 2))
+      : 0;
+
+    const playerSp = playerHeroCopy.magic ?? 0;
+    const canParryThisStrike = !isSpell || playerSp > 0;
+
     // Calculate base total damage without mutating player ahead of parry attempts
     let fullDamage = 0;
     let isCritical = false;
@@ -316,10 +371,10 @@ export const useCombat = () => {
       // Arm parry state for this specific attack attempt
       setParryState({
         isWindowOpen: false,
-        canParry: true,
+        canParry: canParryThisStrike,
         wasParried: false,
         parryAttempted: false,
-        feedbackText: '',
+        feedbackText: !canParryThisStrike ? '0 SPIRITUAL POWER' : '',
         parriesLanded: currentParriesLanded,
         requiredParries,
         comboBroken: false,
@@ -358,7 +413,8 @@ export const useCombat = () => {
           !current.wasParried &&
           !current.comboBroken &&
           !current.parryAttempted &&
-          current.canParry
+          current.canParry &&
+          canParryThisStrike
         ) {
           setParryState({
             isWindowOpen: true,
@@ -412,14 +468,28 @@ export const useCombat = () => {
 
       if (didParryThisStrike) {
         // Strike was deflected!
+        if (isSpell && spellCost > 0) {
+          enemyUnitCopy.magic = Math.max(0, enemyUnitCopy.magic - spellCost);
+          updateBoardEnemy(enemyUnitCopy);
+          addFloatingText({
+            target: 'Enemy',
+            text: `-${spellCost} SP`,
+            type: 'status',
+          });
+          displayAnnouncer(
+            playerHeroCopy,
+            enemyUnitCopy,
+            intent.icon,
+            `SPELL DEFLECTED! ${enemyUnitCopy.name}'s magic is drained (-${spellCost} SP)!`
+          );
+        }
         await waitTimer(600);
       } else {
         // Strike landed and damaged player!
-        playActionSound(intent.actionName);
-        if (typeof enemyUnitCopy.soundAttack === 'function') {
-          enemyUnitCopy.soundAttack();
-        }
-        if (typeof playerHeroCopy.soundHitted === 'function') {
+        playActionSound(intent.actionName, enemyUnitCopy);
+        if (playerHeroCopy.sounds?.hit) {
+          soundEngine.playSfx(playerHeroCopy.sounds.hit);
+        } else if (typeof playerHeroCopy.soundHitted === 'function') {
           playerHeroCopy.soundHitted();
         }
 
@@ -440,8 +510,12 @@ export const useCombat = () => {
         // Apply unparried spell debuffs or life drain
         if (intent.actionName === 'Weakness' || intent.actionName === 'Vulnerability') {
           actionDef.execute(enemyUnitCopy, playerHeroCopy, false);
+          updateBoardEnemy(enemyUnitCopy);
           updateBoardPlayer(playerHeroCopy);
         } else if (intent.actionName === 'Drain Life') {
+          if (spellCost > 0) {
+            enemyUnitCopy.magic = Math.max(0, enemyUnitCopy.magic - spellCost);
+          }
           enemyUnitCopy.health = Math.min(enemyUnitCopy.maxHealth, enemyUnitCopy.health + damagePerStrike);
           updateBoardEnemy(enemyUnitCopy);
         }
@@ -498,7 +572,9 @@ export const useCombat = () => {
           playerHeroCopy,
           enemyUnitCopy,
           intent.icon,
-          `PERFECT PARRY! ${playerHeroCopy.name} completely deflected ${intent.actionName}!`
+          isSpell
+            ? `SPELL DEFLECTED! ${enemyUnitCopy.name}'s magic drained (-${spellCost} SP)!`
+            : `PERFECT PARRY! ${playerHeroCopy.name} completely deflected ${intent.actionName}!`
         );
       }
     } else {
@@ -580,15 +656,22 @@ export const useCombat = () => {
 
     const result = actionDef.execute(playerCopy, enemyCopy, true);
 
-    playActionSound(actionName);
-    if (typeof playerCopy.soundAttack === 'function') {
-      playerCopy.soundAttack();
-    }
-    if (result.damage && typeof enemyCopy.soundHitted === 'function') {
-      enemyCopy.soundHitted();
+    playActionSound(actionName, playerCopy);
+    if (result.damage) {
+      if (enemyCopy.sounds?.hit) {
+        soundEngine.playSfx(enemyCopy.sounds.hit);
+      } else if (typeof enemyCopy.soundHitted === 'function') {
+        enemyCopy.soundHitted();
+      }
     }
 
     if (result.damage !== undefined && result.damage > 0) {
+      if (result.isCritical) {
+        triggerScreenShake('crit');
+      } else if (result.damage >= 20) {
+        triggerScreenShake('heavy');
+      }
+
       addFloatingText({
         target: 'Enemy',
         text: result.isCritical
@@ -670,6 +753,69 @@ export const useCombat = () => {
     updateAction('');
   };
 
+  const isDeathblowEligible =
+    isInFight &&
+    turn === 'Player' &&
+    phase === 'player_turn' &&
+    boardEnemy.health > 0 &&
+    enemyStagger.isStaggered &&
+    boardEnemy.health <= Math.max(15, Math.ceil(boardEnemy.maxHealth * 0.25));
+
+  const executeDeathblow = async () => {
+    if (!isInFight || isResolvingRef.current) return;
+    const enemy = { ...useBattleStore.getState().boardEnemy };
+    const player = { ...useBattleStore.getState().boardPlayer };
+    if (!enemy || enemy.health <= 0) return;
+
+    isResolvingRef.current = true;
+    updatePhase('resolving');
+    updateAction('Deathblow');
+
+    triggerScreenShake('deathblow');
+    soundEngine.playSfx(swordSound);
+    if (enemy.sounds?.hit) {
+      soundEngine.playSfx(enemy.sounds.hit);
+    } else if (typeof enemy.soundHitted === 'function') {
+      enemy.soundHitted();
+    }
+
+    const healAmount = 10;
+    const spAmount = 2;
+    const bonusGold = 25;
+
+    player.health = Math.min(player.maxHealth, player.health + healAmount);
+    player.magic = Math.min(player.maxMagic, player.magic + spAmount);
+    updateBoardPlayer(player);
+    updatePlayerVitals(player.health, player.magic);
+    updateGold(bonusGold);
+
+    addFloatingText({
+      target: 'Player',
+      text: `+${healAmount} HP +${spAmount} SP`,
+      type: 'heal',
+    });
+    addFloatingText({
+      target: 'Enemy',
+      text: 'EXECUTION! DEATHBLOW!',
+      type: 'crit',
+    });
+
+    displayAnnouncer(
+      player,
+      enemy,
+      skillsIcons.attack,
+      `A DECISIVE EXECUTION! ${player.name} executes ${enemy.name}! (+${bonusGold} Gold, +${healAmount} HP, +${spAmount} SP)`
+    );
+
+    enemy.health = 0;
+    updateBoardEnemy(enemy);
+
+    await waitTimer(1000);
+    await handleEnemyDeath(enemy);
+    isResolvingRef.current = false;
+    updateAction('');
+  };
+
   // Preload combat SFX so parries and impacts respond with zero latency
   useEffect(() => {
     soundEngine.preloadSfx([parrySound, swordSound, warning, spelldefend]);
@@ -689,6 +835,17 @@ export const useCombat = () => {
       }
 
       if (phase === 'player_turn' && turn === 'Player' && isInFight) {
+        if (
+          (e.key === 'f' || e.key === 'F') &&
+          boardEnemy.health > 0 &&
+          enemyStagger.isStaggered &&
+          boardEnemy.health <= Math.max(15, Math.ceil(boardEnemy.maxHealth * 0.25))
+        ) {
+          e.preventDefault();
+          executeDeathblow();
+          return;
+        }
+
         const skills = boardPlayer.skills || [];
         if (e.key === '1' && skills[0]) {
           e.preventDefault();
@@ -716,7 +873,7 @@ export const useCombat = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [phase, turn, isInFight, boardPlayer, attemptParry]);
+  }, [phase, turn, isInFight, boardPlayer, boardEnemy, enemyStagger, attemptParry, executeDeathblow]);
 
 
   return {
@@ -729,5 +886,7 @@ export const useCombat = () => {
     boardPlayer,
     executePlayerAction,
     attemptParry,
+    isDeathblowEligible,
+    executeDeathblow,
   };
 };

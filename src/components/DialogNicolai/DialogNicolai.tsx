@@ -2,7 +2,7 @@ import React from 'react';
 import { npcPortraits, heroPortraits } from '../../data/general';
 import { Victory } from '../Victory';
 import { Centerer } from '../Centerer';
-import { useDialogNicolai } from '../../features/components/DialogNicolai';
+import { useDialogNicolai } from './useDialogNicolai';
 import { usePlayerStore } from '../../stores';
 import DialogChoices from '../Dialog/DialogChoices';
 import { DialogOption } from '../../types';
@@ -14,9 +14,7 @@ const DialogNicolai: React.FC = () => {
   const player = usePlayerStore((state) => state.player);
   const playerPortrait =
     player?.portraitFace ||
-    player?.portrait ||
-    heroPortraits.knightheroface ||
-    heroPortraits.knight;
+    heroPortraits.knightheroface;
   const playerName = player?.name || 'Hero';
 
   const defaultSpeech =
@@ -75,7 +73,7 @@ const DialogNicolai: React.FC = () => {
         <div className="flex-1 min-w-0 flex flex-col p-4 sm:p-6 gap-4 sm:gap-5">
           {/* Top Row: Nicolai Speaker Section */}
           <div className="flex flex-row items-start gap-3.5 sm:gap-5">
-            <div className="relative flex-shrink-0 w-16 h-20 sm:w-20 sm:h-24 md:w-24 md:h-28 rounded border-2 border-purple-900 bg-stone-950 shadow-md ring-1 ring-purple-950 overflow-hidden">
+            <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg border-2 border-purple-900 bg-stone-950 shadow-md ring-1 ring-purple-950 overflow-hidden">
               <img
                 src={npcPortraits.nicolai}
                 alt="NICOLAI"
@@ -84,8 +82,8 @@ const DialogNicolai: React.FC = () => {
             </div>
 
             <div className="flex-1 min-w-0 flex flex-col gap-2">
-              <div className="font-cinzel text-xs sm:text-sm md:text-base leading-relaxed text-stone-200 max-h-36 sm:max-h-44 overflow-y-auto pr-2">
-                <span className="font-bold text-purple-300 tracking-wide mr-2 drop-shadow-sm select-none">
+              <div className="font-body text-base sm:text-lg leading-relaxed text-stone-200 max-h-36 sm:max-h-44 overflow-y-auto pr-2">
+                <span className="font-display font-bold text-purple-300 tracking-wider mr-2 text-sm sm:text-base drop-shadow-sm select-none">
                   {name} -
                 </span>
                 <span className="text-stone-200">{speechText}</span>
@@ -99,7 +97,7 @@ const DialogNicolai: React.FC = () => {
           {/* Bottom Row: Player Response Choices Section */}
           <div className="flex flex-row items-start gap-3.5 sm:gap-5">
             {/* Player Portrait with Gold Corner Bracket Frame */}
-            <div className="relative flex-shrink-0 w-16 h-20 sm:w-20 sm:h-24 md:w-24 md:h-28 rounded border border-amber-600/70 bg-stone-950 p-0.5 shadow-md">
+            <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg border border-amber-600/70 bg-stone-950 p-0.5 shadow-md">
               <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 pointer-events-none" />
               <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 pointer-events-none" />
               <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 pointer-events-none" />
@@ -107,7 +105,7 @@ const DialogNicolai: React.FC = () => {
               <img
                 src={playerPortrait}
                 alt={playerName}
-                className="w-full h-full object-cover rounded"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
 

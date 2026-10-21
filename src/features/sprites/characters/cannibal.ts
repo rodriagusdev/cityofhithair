@@ -1,7 +1,7 @@
-import idleCannibalImg from '../../../assets/idlecannibal.png';
-import attackCannibalImg from '../../../assets/attackcannibal.png';
-import hurtCannibalImg from '../../../assets/hurtcannibal.png';
-import deathCannibalImg from '../../../assets/deathcannibal.png';
+import idleCannibalImg from '../../../assets/idlecannibal.webp';
+import attackCannibalImg from '../../../assets/attackcannibal.webp';
+import hurtCannibalImg from '../../../assets/hurtcannibal.webp';
+import deathCannibalImg from '../../../assets/deathcannibal.webp';
 import { UnitSpriteDefinition } from '../types';
 
 /**

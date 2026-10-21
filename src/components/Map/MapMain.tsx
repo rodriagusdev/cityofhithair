@@ -7,7 +7,9 @@ import { Presentation } from '../Presentation';
 import { NextLevel } from './NextLevel';
 import { Board } from '../Board';
 import { MusicPlayer } from '../MusicPlayer';
+import { LowHealthVignette } from '../Atmosphere';
 import { useLevelsStore, useBattleStore, usePlayerStore } from '../../stores';
+import { getLevelDefinition } from '../../data/levels';
 import hithairBg from '../../assets/levels/hithair.webp';
 
 const MapMain = () => {
@@ -16,20 +18,19 @@ const MapMain = () => {
 
   const isInFight = useBattleStore((state) => state.isInFight);
   const getPlayerHero = usePlayerStore((state) => state.player);
+  const currentLevelId = useLevelsStore((state) => state.currentLevelId);
   const isInHithair = useLevelsStore((state) => state.isInHithair);
   const levelName = useLevelsStore((state) => state.levelName);
 
   useEffect(() => {
-    if (isInHithair) {
-      setTrack('hithair');
-    } else {
-      setTrack('dungeons');
-    }
-  }, [isInHithair]);
+    const levelDef = getLevelDefinition(currentLevelId);
+    setTrack(levelDef?.musicTrack ?? (isInHithair ? 'hithair' : 'dungeons'));
+  }, [currentLevelId, isInHithair]);
 
   return (
     <div className="relative h-screen w-full bg-stone-950 text-stone-100 overflow-hidden flex flex-col">
       <MusicPlayer track={track} />
+      <LowHealthVignette />
       {presentation && <Presentation setPresentation={setPresentation} />}
 
       {getPlayerHero.health <= 0 && <GameOver />}

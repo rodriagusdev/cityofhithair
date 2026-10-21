@@ -1,9 +1,9 @@
-import idleDarkKnightImg from '../../../assets/idledarkknight.png';
-import attackDarkKnightImg from '../../../assets/attackdarkknight.png';
-import hurtDarkKnightImg from '../../../assets/hurtdarkknight.png';
-import parryDarkKnightImg from '../../../assets/parrydarkknight.png';
-import readyDarkKnightImg from '../../../assets/readydarkknight.png';
-import deathDarkKnightImg from '../../../assets/deathdarkknight.png';
+import idleDarkKnightImg from '../../../assets/idledarkknight.webp';
+import attackDarkKnightImg from '../../../assets/attackdarkknight.webp';
+import hurtDarkKnightImg from '../../../assets/hurtdarkknight.webp';
+import parryDarkKnightImg from '../../../assets/parrydarkknight.webp';
+import readyDarkKnightImg from '../../../assets/readydarkknight.webp';
+import deathDarkKnightImg from '../../../assets/deathdarkknight.webp';
 import { UnitSpriteDefinition } from '../types';
 
 /**

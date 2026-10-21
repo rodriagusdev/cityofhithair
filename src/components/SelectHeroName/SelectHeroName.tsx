@@ -1,4 +1,4 @@
-import { useSelectHeroName } from '../../features/components/SelectHeroName';
+import { useSelectHeroName } from './useSelectHeroName';
 
 const SelectHeroName = () => {
   const { handleOnChange, updateName } = useSelectHeroName();

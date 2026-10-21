@@ -6,7 +6,7 @@ import {
   usePlayerStore,
 } from '../../stores';
 
-import { useBattleHandler } from '../../features/components/Board';
+import { useBattleHandler } from '../../features/combat';
 
 interface Props {
   skill: skill;

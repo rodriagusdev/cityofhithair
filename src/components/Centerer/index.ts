@@ -1,1 +1,1 @@
-export {default as Centerer} from "./Centerer"
+export { default as Centerer, default as ModalBackdrop } from './Centerer';

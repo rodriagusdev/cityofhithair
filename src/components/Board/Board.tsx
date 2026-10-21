@@ -3,6 +3,7 @@ import { useAnnouncerStore, useBattleStore } from '../../stores';
 import { BoardUnit } from './BoardUnit';
 import { Centerer } from '../Centerer';
 import { SkillPreview } from '../SkillPreview';
+import { AtmosphereParticles } from '../Atmosphere';
 import ShowFireSkillQuestion from '../Announcers/ShowFireSkillQuestion';
 import combatBg from '../../assets/backgroundcombat.jpg';
 
@@ -10,6 +11,7 @@ const Board = () => {
   const currentEnemy = useBattleStore((state) => state.boardEnemy);
   const currentHero = useBattleStore((state) => state.boardPlayer);
   const isInFight = useBattleStore((state) => state.isInFight);
+  const screenShake = useBattleStore((state) => state.screenShake);
   const isPreviewVisible = useAnnouncerStore((state) => state.isPreviewVisible);
   const isSkillQuestion = useAnnouncerStore((state) => state.isSkillQuestion);
   const isAnnouncerVisible = useAnnouncerStore(
@@ -31,7 +33,23 @@ const Board = () => {
   const isClashActive = isHeroAttacking || isEnemyAttacking;
 
   return (
-    <div className="relative flex flex-col md:flex-row items-center justify-center w-screen min-h-screen h-full gap-8 md:gap-24 lg:gap-36 p-6 overflow-x-hidden bg-stone-950 select-none">
+    <div
+      className={`relative flex flex-col md:flex-row items-center justify-center w-screen min-h-screen h-full gap-8 md:gap-24 lg:gap-36 p-6 overflow-x-hidden bg-stone-950 select-none ${
+        screenShake === 'deathblow'
+          ? 'animate-screen-shake-heavy'
+          : screenShake === 'crit' || screenShake === 'heavy'
+            ? 'animate-screen-shake'
+            : ''
+      }`}
+    >
+      {/* Visual Impact Flashes */}
+      {screenShake === 'deathblow' && (
+        <div className="absolute inset-0 bg-red-900/35 z-50 pointer-events-none animate-impact-flash" />
+      )}
+      {screenShake === 'crit' && (
+        <div className="absolute inset-0 bg-amber-500/15 z-50 pointer-events-none animate-impact-flash" />
+      )}
+
       {/* Cinematic Camera Background with Darkest Dungeon Zoom & Impact Punch */}
       <div
         className={`absolute inset-0 bg-cover bg-center pointer-events-none transition-transform duration-500 ease-out ${
@@ -42,6 +60,9 @@ const Board = () => {
 
       {/* Dark gothic atmospheric overlay */}
       <div className="absolute inset-0 bg-stone-950/60 backdrop-brightness-75 pointer-events-none" />
+
+      {/* Dungeon Atmospheric Particles */}
+      <AtmosphereParticles />
 
       {/* Darkest Dungeon Dramatic Spotlight & Vignette during combat clash */}
       <div

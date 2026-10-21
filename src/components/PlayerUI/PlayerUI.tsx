@@ -6,7 +6,8 @@ import PlayerStats from './PlayerStats';
 import PlayerInventory from './PlayerInventory';
 
 const PlayerUI = () => {
-  const player = usePlayerStore((state) => state.player);
+  const getEffectivePlayer = usePlayerStore((state) => state.getEffectivePlayer);
+  const player = getEffectivePlayer();
   const inventory = usePlayerStore((state) => state.inventory);
   const gold = usePlayerStore((state) => state.gold);
   const isInNote = useDialogStore((state) => state.isInNote);

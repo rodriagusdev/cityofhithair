@@ -1,11 +1,10 @@
-import knight from '../../assets/portraits/knightportrait.jpg';
-import knightheroface from '../../assets/portraits/knightheroface.jpg';
-import darkmage from '../../assets/portraits/darkmageportrait.jpg';
-import darkmageface from '../../assets/portraits/darkmageface.jpg';
+import heroknightface from '../../assets/portraits/heroknightface.webp';
+import darksorcerer from '../../assets/portraits/darksorcerer.webp';
 
 export const heroPortraits = {
-  knight: knight,
-  knightheroface: knightheroface,
-  darkmage: darkmage,
-  darkmageface: darkmageface,
+  knight: heroknightface,
+  knightheroface: heroknightface,
+  darkmage: darksorcerer,
+  darkmageface: darksorcerer,
 };
+

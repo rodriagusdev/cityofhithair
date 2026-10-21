@@ -1,17 +1,15 @@
-import marion from '../../assets/portraits/marionportrait.jpg';
-import marionface from '../../assets/portraits/marionface.jpg';
-import merchant from '../../assets/portraits/merchantportrait.jpg';
-import merchantface from '../../assets/portraits/merchantface.jpg';
-import knight from '../../assets/portraits/knight.jpg';
-import knightface from '../../assets/portraits/knightface.jpg';
-import nicolai from '../../assets/portraits/nicolai.jpg';
+import marionface from '../../assets/portraits/marionface.webp';
+import merchantface from '../../assets/portraits/merchantface.webp';
+import knightface from '../../assets/portraits/knightface.webp';
+import nicolai from '../../assets/portraits/nicolai.webp';
 
 export const npcPortraits = {
-  marion: marion,
+  marion: marionface,
   marionface: marionface,
-  merchant: merchant,
+  merchant: merchantface,
   merchantface: merchantface,
-  knight: knight,
+  knight: knightface,
   knightface: knightface,
   nicolai: nicolai,
 };
+

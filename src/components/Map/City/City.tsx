@@ -1,9 +1,8 @@
-import { Dialog } from '../../Dialog';
+import { Dialog, useGetDialogOptions } from '../../Dialog';
 import { useDialogStore } from '../../../stores';
 import { Centerer } from '../../Centerer';
 import { cityNPCs } from '../../../data/npc';
 import { Npc } from '../../NPC';
-import { useGetDialogOptions } from '../../../features/components/Dialog';
 
 const City = () => {
   const { marion, merchant, knight } = useGetDialogOptions();

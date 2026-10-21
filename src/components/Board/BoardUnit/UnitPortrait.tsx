@@ -4,6 +4,7 @@ import { ParryIndicator } from '../ParryIndicator';
 import { UnitSprite } from '../../Sprite';
 import { FloatingCombatText } from '../FloatingCombatText';
 import { useBattleStore } from '../../../stores';
+import { useCombat } from '../../../features/combat';
 
 interface UnitPortraitProps {
   unit: Player | Unit;
@@ -18,8 +19,8 @@ export const UnitPortrait: React.FC<UnitPortraitProps> = ({
 }) => {
   const phase = useBattleStore((state) => state.phase);
   const turn = useBattleStore((state) => state.turn);
-
   const action = useBattleStore((state) => state.action);
+  const { isDeathblowEligible, executeDeathblow } = useCombat();
 
   // Self Cast spells (Defend, Frenzy, Potions) do not draw characters together
   const isSelfCast =
@@ -69,6 +70,20 @@ export const UnitPortrait: React.FC<UnitPortraitProps> = ({
       } ${clashClass} ${clashShadow}`}
     >
       <div className="relative group">
+        {/* Deathblow execution finisher prompt when enemy is staggered and low health */}
+        {isEnemy && isDeathblowEligible && (
+          <button
+            type="button"
+            onClick={executeDeathblow}
+            className="absolute -top-11 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-stone-950 via-red-950 to-stone-950 border-2 border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.95)] text-amber-300 font-cinzel font-black text-xs tracking-widest uppercase animate-bounce cursor-pointer hover:scale-110 active:scale-95 transition-transform flex items-center gap-1.5 whitespace-nowrap"
+            title="Perform Lethal Execution (Press F)"
+          >
+            <span className="text-red-500 text-sm">☠</span>
+            <span>DEATHBLOW [F]</span>
+            <span className="text-red-500 text-sm">☠</span>
+          </button>
+        )}
+
         <UnitSprite
           unit={unit}
           isEnemy={isEnemy}

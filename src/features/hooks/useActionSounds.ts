@@ -6,7 +6,7 @@ import spellfrenzy from '../../assets/sound/spellfrenzy.wav';
 import spelldrainlife from '../../assets/sound/spelldrainlife.wav';
 import drinkpotion from '../../assets/sound/drinkpotion.ogg';
 import drinkpotionmana from '../../assets/sound/drinkpotionmana.ogg';
-import parrySound from '../../assets/sound/parrysound.wav';
+import parrySound from '../../assets/sound/parrysound.mp3';
 import { soundEngine } from '../../services/soundEngine';
 
 export const useActionSounds = () => {

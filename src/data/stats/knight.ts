@@ -5,18 +5,6 @@ import hittedknight from '../../assets/sound/hittedknight.ogg';
 import deathknight from '../../assets/sound/deathknight.ogg';
 import attacksword from '../../assets/sound/attacksword.mp3';
 
-const attackSword = () => {
-  new Audio(attacksword).play();
-};
-
-const hittedKnight = () => {
-  new Audio(hittedknight).play();
-};
-
-const deathKnight = () => {
-  new Audio(deathknight).play();
-};
-
 export const knightStats = {
   id: 150, 
   level: "hithair",
@@ -27,7 +15,7 @@ export const knightStats = {
   magic: 2,
   maxMagic: 2,
   attack: 11,
-  defaultAttack:11,
+  defaultAttack: 11,
   defense: 5,
   criticalChance: 0,
   removedAttack: 0,
@@ -39,12 +27,13 @@ export const knightStats = {
   defenseStatus: 0,
   frenzyStatus: 0,
   darkMastery: 0,
-  portrait: heroPortraits.knight,
   portraitFace: heroPortraits.knightheroface,
   heroClass: '',
-  soundAttack: attackSword,
-  soundHitted: hittedKnight,
-  soundDeath: deathKnight,
+  sounds: {
+    attack: attacksword,
+    hit: hittedknight,
+    death: deathknight,
+  },
   skills: [attack, defend, frenzy, sacrifice],
   potions: [drinkLifePotion, drinkManaPotion],
 };

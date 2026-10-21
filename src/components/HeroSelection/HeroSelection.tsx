@@ -4,8 +4,8 @@ import { heroPortraits } from '../../data/general';
 import { Centerer } from '../Centerer';
 import { wizardStats, knightStats } from '../../data/stats';
 import { SkillPreview } from '../SkillPreview';
-import { useHeroSelection } from '../../features/components/HeroSelection';
 import HeroCard from './HeroCard';
+import { useHeroSelection } from './useHeroSelection';
 
 const HeroSelection = () => {
   const { selectNameIsVisible, isPreviewVisible, animationProps, getSelected } =
@@ -37,19 +37,19 @@ const HeroSelection = () => {
       <div className="relative z-10 flex flex-col items-center gap-6 lg:gap-8 w-full max-w-5xl xl:max-w-6xl mx-auto">
         {/* Minimalist Title Section */}
         <div className="text-center space-y-2 max-w-xl mx-auto">
-          <h1 className="font-cinzel text-4xl font-bold tracking-[0.3em] uppercase text-red-500 block">
+          <h1 className="font-display text-md sm:text-4xl font-bold tracking-[0.25em] w-full uppercase text-red-600 block drop-shadow-[0_2px_15px_rgba(220,38,38,0.4)]">
             Descent into Hithair
           </h1>
         </div>
 
         {/* 2-Column Responsive Widescreen Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 w-full">
           {/* Knight Card */}
           <HeroCard
             id="knight"
             name="Knight"
-            roleBadge="Melee Vanguard"
-            tagline="The Stalwart Vanguard"
+            roleBadge=""
+            tagline="Melee Vanguard"
             description="A knight from Nitali, city where Gwindolyn Human-Daughter was born. The knights of Nitali evade the curse of human link to the creator."
             portrait={heroPortraits.knight}
             health={65}
@@ -65,8 +65,8 @@ const HeroSelection = () => {
           <HeroCard
             id="darkmage"
             name="Dark Sorcerer"
-            roleBadge="Arcane Occultist"
-            tagline="The Occult Scholar"
+            roleBadge=""
+            tagline="Arcane Occultist"
             description="A dark sorcerer from a land unknown and motives unclear."
             portrait={heroPortraits.darkmage}
             health={47}

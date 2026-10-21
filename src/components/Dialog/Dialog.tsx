@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMerchant } from '../../features/components/Dialog';
+import { useMerchant } from './useMerchant';
 import { useAnnouncerStore, useDialogStore, usePlayerStore } from '../../stores';
 import { heroPortraits } from '../../data/general';
 import { ShowItemBought } from '../Announcers';
@@ -34,9 +34,7 @@ const Dialog: React.FC = () => {
   const player = usePlayerStore((state) => state.player);
   const playerPortrait =
     player?.portraitFace ||
-    player?.portrait ||
-    heroPortraits.knightheroface ||
-    heroPortraits.knight;
+    heroPortraits.knightheroface;
   const playerName = player?.name || 'Hero';
 
   const speechText = currentDialog.text || getInitialGreeting(currentDialog.name);
@@ -95,7 +93,7 @@ const Dialog: React.FC = () => {
           {/* Top Row: NPC Speaker Section */}
           <div className="flex flex-row items-start gap-3.5 sm:gap-5">
             {/* NPC Portrait */}
-            <div className="relative flex-shrink-0 w-16 h-20 sm:w-20 sm:h-24 md:w-24 md:h-28 rounded border-2 border-[#54463d] bg-stone-950 shadow-md ring-1 ring-stone-900 overflow-hidden">
+            <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg border-2 border-[#54463d] bg-stone-950 shadow-md ring-1 ring-stone-900 overflow-hidden">
               <img
                 src={currentDialog.portrait}
                 alt={currentDialog.name}
@@ -105,8 +103,8 @@ const Dialog: React.FC = () => {
 
             {/* Speech Transcript */}
             <div className="flex-1 min-w-0 flex flex-col gap-2">
-              <div className="font-cinzel text-sm leading-relaxed text-stone-200 max-h-36 sm:max-h-44 overflow-y-auto pr-2">
-                <span className="font-bold text-amber-400 tracking-wide mr-2 drop-shadow-sm select-none">
+              <div className="font-body text-base sm:text-lg leading-relaxed text-stone-200 max-h-36 sm:max-h-44 overflow-y-auto pr-2">
+                <span className="font-display font-bold text-amber-400 tracking-wider mr-2 text-sm sm:text-base drop-shadow-sm select-none">
                   {currentDialog.name} -
                 </span>
                 <span className="text-stone-200">{speechText}</span>
@@ -133,7 +131,7 @@ const Dialog: React.FC = () => {
           {/* Bottom Row: Player Response Choices Section */}
           <div className="flex flex-row items-start gap-3.5 sm:gap-5">
             {/* Player Portrait with DOS2 Ornate Gold Bracket Frame */}
-            <div className="relative flex-shrink-0 w-16 h-20 sm:w-20 sm:h-24 md:w-24 md:h-28 rounded border border-amber-600/70 bg-stone-950 p-0.5 shadow-md">
+            <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg border border-amber-600/70 bg-stone-950 p-0.5 shadow-md">
               {/* Corner brackets */}
               <div className="absolute -top-1 -left-1 w-2.5 h-2.5 pointer-events-none" />
               <div className="absolute -top-1 -right-1 w-2.5 h-2.5 pointer-events-none" />
@@ -142,7 +140,7 @@ const Dialog: React.FC = () => {
               <img
                 src={playerPortrait}
                 alt={playerName}
-                className="w-full h-full object-cover rounded"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
 

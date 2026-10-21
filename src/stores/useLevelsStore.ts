@@ -1,28 +1,35 @@
 import { create } from 'zustand';
-import {
-  cemeteryData,
-  darkPassageData,
-  lostGalleryData,
-  mausoleumData,
-} from '../data/general';
 import { Unit } from '../types';
+import {
+  getLevelDefinition,
+  getInitialEnemiesMap,
+  LEVEL_REGISTRY,
+} from '../data/levels';
 
-type possibleLevelsToUpdateStatus =
-  | 'isInHithair'
-  | 'isInCemetery'
-  | 'isInMausoleum'
-  | 'isInDarkPassage'
-  | 'isInLostGallery'
-  | 'isInHeartPrison';
+export type DestinationKey =
+  | 'hithair'
+  | 'cemetery'
+  | 'mausoleum'
+  | 'darkPassage'
+  | 'lostGallery'
+  | 'heartPrison'
+  | string;
 
-type possibleLevelsForEnemies =
+export type PossibleLevelsForEnemies =
   | 'cemeteryEnemies'
   | 'mausoleumEnemies'
   | 'dPassageEnemies'
-  | 'lostGalleryEnemies';
+  | 'lostGalleryEnemies'
+  | string;
 
 interface State {
+  currentLevelId: string;
   levelName: string;
+  enemiesByLevel: Record<string, Array<Unit>>;
+  clearedLevelIds: Record<string, boolean>;
+  cannibalDied: boolean;
+
+  // Legacy convenience properties for full backwards compatibility
   isInHithair: boolean;
   isInCemetery: boolean;
   isInMausoleum: boolean;
@@ -39,125 +46,147 @@ interface State {
     darkPassage: number;
     lostGallery: number;
   };
-  cannibalDied: boolean;
 }
 
 interface Actions {
+  travelTo: (destination: DestinationKey) => void;
+  returnToHithair: () => void;
   updateLevelName: (level: string) => void;
-  updateLevelStatus: (level: possibleLevelsToUpdateStatus) => void;
   updateLevelEnemies: (
-    enemyLevel: possibleLevelsForEnemies,
+    enemyLevel: PossibleLevelsForEnemies,
     id: number
   ) => Promise<Array<Unit>>;
-  returnToHithair: () => void;
-  travelTo: (
-    destination:
-      | 'hithair'
-      | 'cemetery'
-      | 'mausoleum'
-      | 'darkPassage'
-      | 'lostGallery'
-      | 'heartPrison'
-  ) => void;
+  isLevelCleared: (levelId: string) => boolean;
+  isLevelAccessible: (levelId: string) => boolean;
+  getEnemiesForLevel: (levelId: string) => Array<Unit>;
   updateLevelsCompletion: (level: string) => void;
   updateCannibalDied: () => void;
 }
 
-const useLevelsStore = create<State & Actions>((set, get) => ({
-  levelName: 'City of Hithair',
+const initialEnemies = getInitialEnemiesMap();
+
+export const useLevelsStore = create<State & Actions>((set, get) => ({
+  currentLevelId: 'hithair',
+  levelName: LEVEL_REGISTRY.hithair?.name ?? 'City of Hithair',
+  enemiesByLevel: initialEnemies,
+  clearedLevelIds: {},
+  cannibalDied: false,
+
+  // Legacy backwards compatibility initial values
   isInHithair: true,
   isInCemetery: false,
   isInMausoleum: false,
   isInDarkPassage: false,
   isInLostGallery: false,
   isInHeartPrison: false,
-  cemeteryEnemies: cemeteryData,
-  mausoleumEnemies: mausoleumData,
-  dPassageEnemies: darkPassageData,
-  lostGalleryEnemies: lostGalleryData,
+  cemeteryEnemies: initialEnemies['cemetery'] ?? [],
+  mausoleumEnemies: initialEnemies['mausoleum'] ?? [],
+  dPassageEnemies: initialEnemies['darkPassage'] ?? [],
+  lostGalleryEnemies: initialEnemies['lostGallery'] ?? [],
   levelsCompletion: {
     cemetery: 0,
     mausoleum: 0,
     darkPassage: 0,
     lostGallery: 0,
   },
-  cannibalDied: false,
-  updateLevelName: (level: string) => set(() => ({ levelName: level })),
-  updateLevelStatus: (level: possibleLevelsToUpdateStatus) => {
-    set((state) => ({
-      [level]: !state[level],
-    }));
-  },
-  updateLevelEnemies: (enemyLevel: possibleLevelsForEnemies, id: number) =>
-    new Promise<Array<Unit>>((resolve) => {
-      const updateEnemies = get()[enemyLevel].filter(
-        (enemies) => enemies.id != id
-      );
-      set({ [enemyLevel]: updateEnemies });
-      resolve(updateEnemies);
-    }),
-  returnToHithair: () =>
-    set(() => ({
-      isInHithair: true,
-      isInCemetery: false,
-      isInMausoleum: false,
-      isInDarkPassage: false,
-      isInLostGallery: false,
-      isInHeartPrison: false,
-      levelName: 'City of Hithair',
-    })),
+
   travelTo: (dest) => {
-    const levelNames = {
-      hithair: 'City of Hithair',
-      cemetery: 'Cemetery',
-      mausoleum: 'Mausoleum',
-      darkPassage: 'Dark Passage',
-      lostGallery: 'Lost Gallery',
-      heartPrison: "Heart's Prison",
-    };
+    const def = getLevelDefinition(dest);
+    const targetId = def?.id ?? dest;
+    const targetName = def?.name ?? 'City of Hithair';
 
     set(() => ({
-      isInHithair: dest === 'hithair',
-      isInCemetery: dest === 'cemetery',
-      isInMausoleum: dest === 'mausoleum',
-      isInDarkPassage: dest === 'darkPassage',
-      isInLostGallery: dest === 'lostGallery',
-      isInHeartPrison: dest === 'heartPrison',
-      levelName: levelNames[dest] || 'City of Hithair',
+      currentLevelId: targetId,
+      levelName: targetName,
+      isInHithair: targetId === 'hithair',
+      isInCemetery: targetId === 'cemetery',
+      isInMausoleum: targetId === 'mausoleum',
+      isInDarkPassage: targetId === 'darkPassage',
+      isInLostGallery: targetId === 'lostGallery',
+      isInHeartPrison: targetId === 'heartPrison',
     }));
   },
-  updateLevelsCompletion: (level: string) => {
-    let key: keyof State['levelsCompletion'] | null = null;
 
-    switch (level) {
-      case 'cemetery':
-      case 'cemeteryEnemies':
-        key = 'cemetery';
-        break;
-      case 'mausoleum':
-      case 'mausoleumEnemies':
-        key = 'mausoleum';
-        break;
-      case 'dark passage':
-      case 'darkPassage':
-      case 'dPassageEnemies':
-        key = 'darkPassage';
-        break;
-      case 'lost gallery':
-      case 'lostGallery':
-      case 'lostGalleryEnemies':
-        key = 'lostGallery';
-        break;
-      default:
-        break;
-    }
-
-    if (key) {
-      set((state) => ({
-        levelsCompletion: { ...state.levelsCompletion, [key!]: 1 },
-      }));
-    }
+  returnToHithair: () => {
+    get().travelTo('hithair');
   },
+
+  updateLevelName: (level: string) => set(() => ({ levelName: level })),
+
+  updateLevelEnemies: (enemyLevel: PossibleLevelsForEnemies, id: number) =>
+    new Promise<Array<Unit>>((resolve) => {
+      const state = get();
+      const def = getLevelDefinition(enemyLevel);
+      const levelId = def ? def.id : enemyLevel;
+      const key = def?.enemyLevelKey ?? levelId;
+
+      const currentList =
+        state.enemiesByLevel[levelId] || state.enemiesByLevel[key] || [];
+      const updatedList = currentList.filter((enemy) => enemy.id !== id);
+
+      const nextEnemiesByLevel: Record<string, Array<Unit>> = {
+        ...state.enemiesByLevel,
+        [levelId]: updatedList,
+      };
+      if (def?.enemyLevelKey) {
+        nextEnemiesByLevel[def.enemyLevelKey] = updatedList;
+      }
+
+      const nextCleared = { ...state.clearedLevelIds };
+      if (updatedList.length === 0) {
+        nextCleared[levelId] = true;
+      }
+
+      set(() => ({
+        enemiesByLevel: nextEnemiesByLevel,
+        clearedLevelIds: nextCleared,
+        // Synchronize legacy convenience arrays
+        cemeteryEnemies: nextEnemiesByLevel['cemetery'] ?? [],
+        mausoleumEnemies: nextEnemiesByLevel['mausoleum'] ?? [],
+        dPassageEnemies: nextEnemiesByLevel['darkPassage'] ?? [],
+        lostGalleryEnemies: nextEnemiesByLevel['lostGallery'] ?? [],
+      }));
+
+      resolve(updatedList);
+    }),
+
+  isLevelCleared: (levelId: string) => {
+    const state = get();
+    if (state.clearedLevelIds[levelId]) return true;
+    const def = getLevelDefinition(levelId);
+    if (!def) return false;
+    const list = state.enemiesByLevel[def.id] ?? [];
+    return (def.initialEnemies?.length ?? 0) > 0 && list.length === 0;
+  },
+
+  isLevelAccessible: (levelId: string) => {
+    const def = getLevelDefinition(levelId);
+    if (!def || !def.unlockedBy) return true;
+    const reqs = Array.isArray(def.unlockedBy) ? def.unlockedBy : [def.unlockedBy];
+    return reqs.every((req) => get().isLevelCleared(req));
+  },
+
+  getEnemiesForLevel: (levelId: string) => {
+    const def = getLevelDefinition(levelId);
+    const key = def?.id ?? levelId;
+    return get().enemiesByLevel[key] ?? [];
+  },
+
+  updateLevelsCompletion: (level: string) => {
+    const def = getLevelDefinition(level);
+    const levelId = def?.id ?? level;
+
+    set((state) => ({
+      clearedLevelIds: { ...state.clearedLevelIds, [levelId]: true },
+      levelsCompletion: {
+        ...state.levelsCompletion,
+        ...(levelId in state.levelsCompletion
+          ? { [levelId as keyof State['levelsCompletion']]: 1 }
+          : {}),
+      },
+    }));
+  },
+
   updateCannibalDied: () => {
     set(() => ({ cannibalDied: true }));
   },

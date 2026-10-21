@@ -1,9 +1,9 @@
-import idleSkeletonImg from '../../../assets/idleskeleton.png';
-import attackSkeletonImg from '../../../assets/attackskeleton.png';
-import readySkeletonImg from '../../../assets/readyskeleton.png';
-import hurtSkeletonImg from '../../../assets/hurtskeleton.png';
-import parrySkeletonImg from '../../../assets/parryskeleton.png';
-import deathSkeletonImg from '../../../assets/deathskeleton.png';
+import idleSkeletonImg from '../../../assets/idleskeleton.webp';
+import attackSkeletonImg from '../../../assets/attackskeleton.webp';
+import readySkeletonImg from '../../../assets/readyskeleton.webp';
+import hurtSkeletonImg from '../../../assets/hurtskeleton.webp';
+import parrySkeletonImg from '../../../assets/parryskeleton.webp';
+import deathSkeletonImg from '../../../assets/deathskeleton.webp';
 import { UnitSpriteDefinition } from '../types';
 
 /**

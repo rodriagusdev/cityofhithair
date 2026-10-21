@@ -6,7 +6,9 @@ def unwrap_sprite(filename, cols, rows, cell_w=168, cell_h=168):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     assets_dir = os.path.join(base_dir, 'src', 'assets')
     path = os.path.join(assets_dir, filename)
-    backup_path = os.path.join(assets_dir, filename.replace('.png', '_original_grid.png'))
+    backup_dir = os.path.join(base_dir, 'raw-assets', 'sprites')
+    os.makedirs(backup_dir, exist_ok=True)
+    backup_path = os.path.join(backup_dir, filename.replace('.png', '_original_grid.png'))
     
     if not os.path.exists(path):
         print(f'File not found: {path}')
@@ -40,7 +42,9 @@ def auto_unwrap(filename, cell_w=168, cell_h=168, force_backup=False):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     assets_dir = os.path.join(base_dir, 'src', 'assets')
     path = os.path.join(assets_dir, filename)
-    backup_path = os.path.join(assets_dir, filename.replace('.png', '_original_grid.png'))
+    backup_dir = os.path.join(base_dir, 'raw-assets', 'sprites')
+    os.makedirs(backup_dir, exist_ok=True)
+    backup_path = os.path.join(backup_dir, filename.replace('.png', '_original_grid.png'))
     
     if not os.path.exists(path):
         print(f'File not found: {path}')

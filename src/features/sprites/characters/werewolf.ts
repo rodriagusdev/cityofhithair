@@ -1,7 +1,7 @@
-import idleWerewolfImg from '../../../assets/idlewerewolf.png';
-import attackWerewolfImg from '../../../assets/attackwerewolf.png';
-import hurtWerewolfImg from '../../../assets/hurtwerewolf.png';
-import deathWerewolfImg from '../../../assets/deathwerewolf.png';
+import idleWerewolfImg from '../../../assets/idlewerewolf.webp';
+import attackWerewolfImg from '../../../assets/attackwerewolf.webp';
+import hurtWerewolfImg from '../../../assets/hurtwerewolf.webp';
+import deathWerewolfImg from '../../../assets/deathwerewolf.webp';
 import { UnitSpriteDefinition } from '../types';
 
 /**

@@ -21,6 +21,7 @@ interface State {
   boardEnemy: Unit;
   boardPlayer: Player;
   floatingTexts: FloatingCombatNotification[];
+  screenShake: 'none' | 'crit' | 'deathblow' | 'heavy';
 }
 
 interface Actions {
@@ -37,6 +38,7 @@ interface Actions {
   updateBoardPlayer: (playerHero: Player) => void;
   addFloatingText: (item: Omit<FloatingCombatNotification, 'id'>) => void;
   removeFloatingText: (id: number) => void;
+  triggerScreenShake: (type: 'crit' | 'deathblow' | 'heavy') => void;
 }
 
 const initialParryState: ParryState = {
@@ -71,6 +73,14 @@ const useBattleStore = create<State & Actions>((set, get) => ({
   boardEnemy: {} as Unit,
   boardPlayer: {} as Player,
   floatingTexts: [],
+  screenShake: 'none',
+
+  triggerScreenShake: (type: 'crit' | 'deathblow' | 'heavy') => {
+    set({ screenShake: type });
+    setTimeout(() => {
+      set({ screenShake: 'none' });
+    }, type === 'deathblow' ? 450 : 250);
+  },
 
   addFloatingText: (item: Omit<FloatingCombatNotification, 'id'>) => {
     const id = Date.now() + Math.random();

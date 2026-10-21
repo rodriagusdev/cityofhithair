@@ -10,18 +10,6 @@ import attackwizard from '../../assets/sound/attackwizard.wav';
 import hittedwizard from '../../assets/sound/hittedwizard.wav';
 import deathwizard from '../../assets/sound/deathwizard.wav';
 
-const attackWizard = () => {
-  new Audio(attackwizard).play();
-};
-
-const hittedWizard = () => {
-  new Audio(hittedwizard).play();
-};
-
-const deathWizard = () => {
-  new Audio(deathwizard).play();
-};
-
 export const wizardStats = {
   id: 150, 
   level: "hithair",
@@ -44,11 +32,12 @@ export const wizardStats = {
   defenseStatus: 0,
   frenzyStatus: 0,
   darkMastery: 2,
-  portrait: heroPortraits.darkmage,
   portraitFace: heroPortraits.darkmageface,
-  soundAttack: attackWizard,
-  soundHitted: hittedWizard,
-  soundDeath: deathWizard,
+  sounds: {
+    attack: attackwizard,
+    hit: hittedwizard,
+    death: deathwizard,
+  },
   heroClass: '',
   skills: [darkAttack, weakness, vulnerability, drainLife],
   potions: [drinkLifePotion, drinkManaPotion],

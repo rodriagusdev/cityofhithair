@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Item, Player, skill } from '../types';
+import { computeEffectivePlayer, toggleEquipItem } from '../features/items';
 
 interface State {
   player: Player;
@@ -16,6 +17,8 @@ interface Actions {
   updatePlayerHero: (stat: 'darkMastery' | 'attack', value: number) => void;
   updateClass: (data: string) => void;
   updateInventory: (items: Array<Item>) => void;
+  toggleEquipItem: (itemIndex: number) => void;
+  getEffectivePlayer: () => Player;
   updateGold: (gold: number) => void;
   updatePotion: (
     potion: 'healthPotions' | 'manaPotions',
@@ -55,7 +58,16 @@ const usePlayerStore = create<State & Actions>((set, get) => ({
     set((state) => ({
       inventory: [...state.inventory.concat(items)],
     })),
-  updateGold: (gold: number) => set((state) => ({ gold: state.gold + gold })),
+  toggleEquipItem: (itemIndex: number) =>
+    set((state) => ({
+      inventory: toggleEquipItem(state.inventory, itemIndex),
+    })),
+  getEffectivePlayer: () => {
+    const { player, inventory } = get();
+    return computeEffectivePlayer(player, inventory);
+  },
+  updateGold: (gold: number) =>
+    set((state) => ({ gold: Math.max(0, state.gold + gold) })),
   updatePotion: (potion: 'healthPotions' | 'manaPotions', value: number) => {
     set((state) => ({
       [potion]: state[potion] + value,

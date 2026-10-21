@@ -328,6 +328,68 @@ class SoundEngine {
       listener(isPlaying, this.currentMusicTrack);
     });
   }
+
+  // --- Heartbeat Audio Synthesis (Atmosphere B) ---
+  private heartbeatInterval: number | null = null;
+  private audioCtx: AudioContext | null = null;
+
+  public startHeartbeat(): void {
+    if (this.heartbeatInterval !== null || this.isMuted) return;
+
+    const playThump = (freq: number, duration: number, gainVal: number) => {
+      try {
+        const AudioContextClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextClass) return;
+
+        if (!this.audioCtx) {
+          this.audioCtx = new AudioContextClass();
+        }
+        if (this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume();
+        }
+
+        const ctx = this.audioCtx;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(25, ctx.currentTime + duration);
+
+        const currentVol = (this.isMuted ? 0 : this.sfxVolume) * gainVal;
+        gain.gain.setValueAtTime(Math.max(0.0001, currentVol), ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch {
+        // Handled silently if AudioContext not allowed yet
+      }
+    };
+
+    const triggerHeartbeat = () => {
+      if (this.isMuted) return;
+      playThump(65, 0.12, 0.35);
+      window.setTimeout(() => {
+        playThump(85, 0.14, 0.45);
+      }, 140);
+    };
+
+    triggerHeartbeat();
+    this.heartbeatInterval = window.setInterval(triggerHeartbeat, 950);
+  }
+
+  public stopHeartbeat(): void {
+    if (this.heartbeatInterval !== null) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
 }
 
 export const soundEngine = new SoundEngine();

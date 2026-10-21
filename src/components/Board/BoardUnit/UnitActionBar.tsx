@@ -29,15 +29,6 @@ export const UnitActionBar: React.FC<UnitActionBarProps> = ({ unit, isEnemy }) =
       <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-stone-600/70 pointer-events-none" />
       <div className="absolute bottom-1.5 right-1.5 w-1 h-1 rounded-full bg-stone-400 border border-stone-900 shadow-sm pointer-events-none" />
 
-      {/* Extra Action Banner when player posture broke enemy */}
-      {isPlayer && playerActionsRemaining > 1 && (
-        <div className="flex items-center justify-center gap-2 px-2.5 py-1 bg-amber-950/70 border border-amber-500/70 rounded-lg shadow-[0_0_12px_rgba(245,158,11,0.3)] animate-pulse">
-          <span className="text-[10px] font-cinzel font-black tracking-widest text-amber-300 uppercase">
-            ⚔ Extra Action Ready ({playerActionsRemaining} Actions)
-          </span>
-        </div>
-      )}
-
       {/* Combat Skills Rack */}
       <div className="flex flex-col gap-1 w-full">
         {/* Header / Divider */}

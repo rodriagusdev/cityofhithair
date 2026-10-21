@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBoardUnit } from '../../../features/components/Board/BoardUnit';
+import { useBoardUnit } from './useBoardUnit';
 import { Player, Unit } from '../../../types';
 import { useBattleStore } from '../../../stores';
 import UnitPortrait from './UnitPortrait';
@@ -26,12 +26,11 @@ const BoardUnit: React.FC<Props> = ({ unit, className = '' }) => {
       {/* Turns counter above the player container */}
       {!isEnemy && (
         <div className="flex items-center justify-start w-full px-1 -mb-1">
-          <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 border border-stone-800 rounded-lg shadow-sm">
-            <div className="w-1.5 h-1.5 rotate-45 bg-amber-500" />
-            <span className="text-[11px] font-cinzel font-bold text-amber-300 tracking-wider">
-              Turns: {playerActionsRemaining}
-            </span>
-          </div>
+
+          <span className="text-lg font-cinzel font-bold text-amber-500 tracking-wider">
+            Turns: {playerActionsRemaining}
+          </span>
+
         </div>
       )}
 

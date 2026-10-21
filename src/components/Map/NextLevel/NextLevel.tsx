@@ -1,100 +1,33 @@
 import { useLevelsStore } from '../../../stores';
-import cemeteryBg from '../../../assets/levels/cemetery.webp';
-import mausoleumBg from '../../../assets/levels/mausoleum.webp';
-import darkPassageBg from '../../../assets/levels/darkpassage.webp';
-import lostGalleryBg from '../../../assets/levels/lostgallery.webp';
-import heartsPrisonBg from '../../../assets/levels/heartsprison.webp';
-import hithairBg from '../../../assets/levels/hithair.webp';
+import { getAllLevels } from '../../../data/levels';
 import TravelWaypoint from './TravelWaypoint';
 
-type DestinationKey =
-  | 'hithair'
-  | 'cemetery'
-  | 'mausoleum'
-  | 'darkPassage'
-  | 'lostGallery'
-  | 'heartPrison';
-
-const NextLevel = () => {
+export const NextLevel = () => {
   const {
+    currentLevelId,
     isInHithair,
-    isInCemetery,
-    isInMausoleum,
-    isInDarkPassage,
-    isInLostGallery,
-    isInHeartPrison,
-    cemeteryEnemies,
-    mausoleumEnemies,
-    dPassageEnemies,
-    lostGalleryEnemies,
+    isLevelAccessible,
+    getEnemiesForLevel,
     travelTo,
   } = useLevelsStore();
 
-  const isCemeteryCleared = cemeteryEnemies.length === 0;
-  const isMausoleumCleared = mausoleumEnemies.length === 0;
-  const isDarkPassageCleared = dPassageEnemies.length === 0;
-  const isLostGalleryCleared = lostGalleryEnemies.length === 0;
+  const allLevels = getAllLevels();
 
-  // Dungeon definitions and unlock progression
-  const waypoints: Array<{
-    id: DestinationKey;
-    name: string;
-    image: string;
-    isCurrent: boolean;
-    isAccessible: boolean;
-    remainingEnemies?: number;
-  }> = [
-    {
-      id: 'hithair',
-      name: 'City of Hithair',
-      image: hithairBg,
-      isCurrent: isInHithair,
-      isAccessible: true, // Can always return to Hithair hub
-    },
-    {
-      id: 'cemetery',
-      name: 'Cemetery',
-      image: cemeteryBg,
-      isCurrent: isInCemetery,
-      isAccessible: true, // First dungeon, always unlocked
-      remainingEnemies: cemeteryEnemies.length,
-    },
-    {
-      id: 'mausoleum',
-      name: 'Mausoleum',
-      image: mausoleumBg,
-      isCurrent: isInMausoleum,
-      isAccessible: isCemeteryCleared,
-      remainingEnemies: mausoleumEnemies.length,
-    },
-    {
-      id: 'darkPassage',
-      name: 'Dark Passage',
-      image: darkPassageBg,
-      isCurrent: isInDarkPassage,
-      isAccessible: isCemeteryCleared && isMausoleumCleared,
-      remainingEnemies: dPassageEnemies.length,
-    },
-    {
-      id: 'lostGallery',
-      name: 'Lost Gallery',
-      image: lostGalleryBg,
-      isCurrent: isInLostGallery,
-      isAccessible: isCemeteryCleared && isMausoleumCleared && isDarkPassageCleared,
-      remainingEnemies: lostGalleryEnemies.length,
-    },
-    {
-      id: 'heartPrison',
-      name: "Heart's Prison",
-      image: heartsPrisonBg,
-      isCurrent: isInHeartPrison,
-      isAccessible:
-        isCemeteryCleared &&
-        isMausoleumCleared &&
-        isDarkPassageCleared &&
-        isLostGalleryCleared,
-    },
-  ];
+  const waypoints = allLevels.map((level) => {
+    const isCurrent = level.id === currentLevelId;
+    const isAccessible = isLevelAccessible(level.id);
+    const enemies = getEnemiesForLevel(level.id);
+    const hasInitialEnemies = Boolean(level.initialEnemies && level.initialEnemies.length > 0);
+
+    return {
+      id: level.id,
+      name: level.name,
+      image: level.bgImage,
+      isCurrent,
+      isAccessible,
+      remainingEnemies: hasInitialEnemies ? enemies.length : undefined,
+    };
+  });
 
   return (
     <div className="flex-1 min-h-0 flex flex-col w-full p-2.5 bg-stone-950/85 backdrop-blur-md border border-stone-800 rounded-lg shadow-xl text-stone-200 overflow-hidden">
@@ -133,7 +66,7 @@ const NextLevel = () => {
           onClick={() => travelTo('hithair')}
           className="mt-2 shrink-0 py-1.5 px-3 font-cinzel text-xs tracking-wider font-bold text-stone-200 bg-red-950/90 hover:bg-red-900 hover:text-white border border-red-900/80 hover:border-red-700 rounded transition-all cursor-pointer shadow-sm text-center"
         >
-          Retreat to Safety (Hithair)
+          Retreat to Safety
         </button>
       )}
     </div>

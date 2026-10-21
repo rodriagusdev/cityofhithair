@@ -1,8 +1,8 @@
-import idleDarkSorcererImg from '../../../assets/idledarksorcerer.png';
-import attackDarkSorcererImg from '../../../assets/attackdarksorcerer.png';
-import hurtDarkSorcererImg from '../../../assets/hurtdarksorcerer.png';
-import deathDarkSorcererImg from '../../../assets/deathdarksorcerer.png';
-import parryDarkSorcererImg from '../../../assets/parrydarksorcerer.png';
+import idleDarkSorcererImg from '../../../assets/idledarksorcerer.webp';
+import attackDarkSorcererImg from '../../../assets/attackdarksorcerer.webp';
+import hurtDarkSorcererImg from '../../../assets/hurtdarksorcerer.webp';
+import deathDarkSorcererImg from '../../../assets/deathdarksorcerer.webp';
+import parryDarkSorcererImg from '../../../assets/parrydarksorcerer.webp';
 import { UnitSpriteDefinition } from '../types';
 
 /**

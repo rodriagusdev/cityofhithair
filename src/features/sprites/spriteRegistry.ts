@@ -74,25 +74,25 @@ export const getSpriteDefinitionForUnit = (
     }
   }
 
-  // Check portrait asset path (e.g. contains 'darkknight', 'skeleton', 'darkmage', 'darksorcerer', 'werewolf', 'cannibal')
-  if (typeof unit.portrait === 'string') {
-    const portraitLower = unit.portrait.toLowerCase();
-    if (portraitLower.includes('darkknight')) {
+  // Check portraitFace asset path (e.g. contains 'darkknight', 'skeleton', 'darkmage', 'darksorcerer', 'werewolf', 'hawnyr', 'cannibal')
+  if (typeof unit.portraitFace === 'string') {
+    const faceLower = unit.portraitFace.toLowerCase();
+    if (faceLower.includes('darkknight')) {
       return darkKnightSprite;
     }
-    if (portraitLower.includes('skeleton')) {
+    if (faceLower.includes('skeleton')) {
       return skeletonSprite;
     }
-    if (portraitLower.includes('werewolf')) {
+    if (faceLower.includes('werewolf') || faceLower.includes('hawnyr')) {
       return werewolfSprite;
     }
-    if (portraitLower.includes('cannibal')) {
+    if (faceLower.includes('cannibal')) {
       return cannibalSprite;
     }
     if (
-      portraitLower.includes('darkmage') ||
-      portraitLower.includes('darksorcerer') ||
-      portraitLower.includes('sorcerer')
+      faceLower.includes('darkmage') ||
+      faceLower.includes('darksorcerer') ||
+      faceLower.includes('sorcerer')
     ) {
       return darkSorcererSprite;
     }

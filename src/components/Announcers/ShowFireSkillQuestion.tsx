@@ -1,4 +1,4 @@
-import { useBattleHandler } from '../../features/components/Board';
+import { useBattleHandler } from '../../features/combat';
 import {
   useAnnouncerStore,
   useBattleStore,

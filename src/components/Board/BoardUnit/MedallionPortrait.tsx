@@ -37,7 +37,7 @@ export const MedallionPortrait: React.FC<MedallionPortraitProps> = ({
   const hasVulnerability = !!unit.vulnerabilityStatus;
   const hasDefense = (unit.defenseStatus ?? 0) > 0;
 
-  const portraitSrc = unit.portraitFace || unit.portrait;
+  const portraitSrc = unit.portraitFace;
 
   return (
     <div
@@ -459,7 +459,8 @@ export const MedallionPortrait: React.FC<MedallionPortraitProps> = ({
         <img
           src={portraitSrc}
           alt={unit.name}
-          className="w-full h-full object-cover scale-105  pointer-events-none"
+          style={isEnemy ? { transform: 'scaleX(-1) scale(1.05)' } : { transform: 'scale(1.05)' }}
+          className="w-full h-full object-cover pointer-events-none"
         />
       </div>
     </div>

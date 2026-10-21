@@ -1,4 +1,4 @@
-import { useMusicPlayer } from '../../features/components/MusicPlayer';
+import { useMusicPlayer } from './useMusicPlayer';
 
 interface Props {
   track: string;

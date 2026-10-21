@@ -1,11 +1,7 @@
-import darkknightportrait from '../../assets/portraits/darkknightportrait.jpg';
-import darkknightface from '../../assets/portraits/darkknightface.jpg';
-import skeletonportrait from '../../assets/portraits/skeletonportrait.jpg';
-import skeletonface from '../../assets/portraits/skeletonface.jpg';
-import werewolfPortrait from '../../assets/portraits/werewolfportrait.jpg';
-import werewolfface from '../../assets/portraits/werewolfface.jpg';
-import cannibalportrait from '../../assets/portraits/cannibalportrait.jpg';
-import cannibalface from '../../assets/portraits/cannibalface.jpg';
+import darkknightface from '../../assets/portraits/darkknightface.webp';
+import skeletonface from '../../assets/portraits/skeletonface.webp';
+import hawnyrface from '../../assets/portraits/hawnyrface.webp';
+import cannibalface from '../../assets/portraits/cannibalface.webp';
 import attacksword from '../../assets/sound/attacksword.mp3';
 import attackcannibal from '../../assets/sound/attackcannibal.ogg';
 import attackwerewolf from '../../assets/sound/attackwerewolf.ogg';
@@ -17,52 +13,32 @@ import deathcannibal from '../../assets/sound/deathcannibal.ogg';
 import deathdarkknight from '../../assets/sound/deathdarkknight.ogg';
 import deathwerewolf from '../../assets/sound/deathwerewolf.ogg';
 import deathskeleton from '../../assets/sound/deathskeleton.mp3';
-import { Unit } from '../../types';
+import { Unit, UnitSounds } from '../../types';
 import { attack } from '../skills/combat';
 import { drainLife, vulnerability, weakness } from '../skills/darkmagic';
 
-const attackSword = () => {
-  new Audio(attacksword).play();
+const SKELETON_SOUNDS: UnitSounds = {
+  attack: attacksword,
+  hit: hittedskele,
+  death: deathskeleton,
 };
 
-const attackCannibal = () => {
-  new Audio(attackcannibal).play();
+const DARK_KNIGHT_SOUNDS: UnitSounds = {
+  attack: attacksword,
+  hit: hitteddk,
+  death: deathdarkknight,
 };
 
-const attackWerewolf = () => {
-  new Audio(attackwerewolf).play();
+const CANNIBAL_SOUNDS: UnitSounds = {
+  attack: attackcannibal,
+  hit: hittedcannibal,
+  death: deathcannibal,
 };
 
-const hittedSkeleton = () => {
-  new Audio(hittedskele).play();
-};
-
-const hittedDarkKnight = () => {
-  new Audio(hitteddk).play();
-};
-
-const hittedCannibal = () => {
-  new Audio(hittedcannibal).play();
-};
-
-const hittedWerewolf = () => {
-  new Audio(hittedwerewolf).play();
-};
-
-const deathCannibal = () => {
-  new Audio(deathcannibal).play();
-};
-
-const deathDarkKnight = () => {
-  new Audio(deathdarkknight).play();
-};
-
-const deathWerewolf = () => {
-  new Audio(deathwerewolf).play();
-};
-
-const deathSkeleton = () => {
-  new Audio(deathskeleton).play();
+const WEREWOLF_SOUNDS: UnitSounds = {
+  attack: attackwerewolf,
+  hit: hittedwerewolf,
+  death: deathwerewolf,
 };
 
 export const cemeteryData: Array<Unit> = [
@@ -78,7 +54,6 @@ export const cemeteryData: Array<Unit> = [
     magic: 0,
     maxMagic: 0,
     criticalChance: 10,
-    portrait: skeletonportrait,
     portraitFace: skeletonface,
     removedAttack: 0,
     removedDefense: 0,
@@ -89,9 +64,7 @@ export const cemeteryData: Array<Unit> = [
     defenseStatus: 0,
     frenzyStatus: 0,
     darkMastery: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedSkeleton,
-    soundDeath: deathSkeleton,
+    sounds: SKELETON_SOUNDS,
     skills: [attack],
   },
   {
@@ -106,7 +79,6 @@ export const cemeteryData: Array<Unit> = [
     maxMagic: 0,
     criticalChance: 8,
     darkMastery: 0,
-    portrait: skeletonportrait,
     portraitFace: skeletonface,
     level: 'cemeteryEnemies',
     removedAttack: 0,
@@ -117,9 +89,7 @@ export const cemeteryData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedSkeleton,
-    soundDeath: deathSkeleton,
+    sounds: SKELETON_SOUNDS,
     skills: [attack],
   },
   {
@@ -134,7 +104,6 @@ export const cemeteryData: Array<Unit> = [
     maxMagic: 2,
     darkMastery: 1,
     criticalChance: 12,
-    portrait: darkknightportrait,
     portraitFace: darkknightface,
     level: 'cemeteryEnemies',
     removedAttack: 0,
@@ -145,9 +114,7 @@ export const cemeteryData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedDarkKnight,
-    soundDeath: deathDarkKnight,
+    sounds: DARK_KNIGHT_SOUNDS,
     skills: [attack, weakness],
   },
 ];
@@ -164,7 +131,6 @@ export const mausoleumData: Array<Unit> = [
     criticalChance: 25,
     magic: 0,
     maxMagic: 0,
-    portrait: skeletonportrait,
     portraitFace: skeletonface,
     level: 'mausoleumEnemies',
     removedAttack: 0,
@@ -176,9 +142,7 @@ export const mausoleumData: Array<Unit> = [
     defenseStatus: 0,
     frenzyStatus: 0,
     darkMastery: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedSkeleton,
-    soundDeath: deathSkeleton,
+    sounds: SKELETON_SOUNDS,
     skills: [attack],
   },
   {
@@ -192,7 +156,6 @@ export const mausoleumData: Array<Unit> = [
     criticalChance: 21,
     magic: 0,
     maxMagic: 0,
-    portrait: skeletonportrait,
     portraitFace: skeletonface,
     level: 'mausoleumEnemies',
     removedAttack: 0,
@@ -204,9 +167,7 @@ export const mausoleumData: Array<Unit> = [
     defenseStatus: 0,
     frenzyStatus: 0,
     darkMastery: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedSkeleton,
-    soundDeath: deathSkeleton,
+    sounds: SKELETON_SOUNDS,
     skills: [attack],
   },
   {
@@ -221,7 +182,6 @@ export const mausoleumData: Array<Unit> = [
     maxMagic: 6,
     darkMastery: 4,
     criticalChance: 30,
-    portrait: darkknightportrait,
     portraitFace: darkknightface,
     removedAttack: 0,
     removedDefense: 0,
@@ -231,9 +191,7 @@ export const mausoleumData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedDarkKnight,
-    soundDeath: deathDarkKnight,
+    sounds: DARK_KNIGHT_SOUNDS,
     skills: [attack, vulnerability],
     level: 'mausoleumEnemies',
   },
@@ -249,7 +207,6 @@ export const mausoleumData: Array<Unit> = [
     maxMagic: 2,
     darkMastery: 2,
     criticalChance: 65,
-    portrait: darkknightportrait,
     portraitFace: darkknightface,
     removedAttack: 0,
     removedDefense: 0,
@@ -259,9 +216,7 @@ export const mausoleumData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedDarkKnight,
-    soundDeath: deathDarkKnight,
+    sounds: DARK_KNIGHT_SOUNDS,
     skills: [attack, weakness],
     level: 'mausoleumEnemies',
   },
@@ -280,7 +235,6 @@ export const darkPassageData: Array<Unit> = [
     magic: 2,
     maxMagic: 2,
     darkMastery: 2,
-    portrait: cannibalportrait,
     portraitFace: cannibalface,
     removedAttack: 0,
     removedDefense: 0,
@@ -290,9 +244,7 @@ export const darkPassageData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackCannibal,
-    soundHitted: hittedCannibal,
-    soundDeath: deathCannibal,
+    sounds: CANNIBAL_SOUNDS,
     skills: [attack, vulnerability],
     level: 'dPassageEnemies',
   },
@@ -311,8 +263,7 @@ export const lostGalleryData: Array<Unit> = [
     magic: 1,
     maxMagic: 1,
     darkMastery: 0,
-    portrait: werewolfPortrait,
-    portraitFace: werewolfface,
+    portraitFace: hawnyrface,
     removedAttack: 0,
     removedDefense: 0,
     frenzyAttack: 0,
@@ -321,9 +272,7 @@ export const lostGalleryData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackWerewolf,
-    soundHitted: hittedWerewolf,
-    soundDeath: deathWerewolf,
+    sounds: WEREWOLF_SOUNDS,
     skills: [attack],
     level: 'lostGalleryEnemies',
   },
@@ -339,7 +288,6 @@ export const lostGalleryData: Array<Unit> = [
     magic: 8,
     maxMagic: 8,
     darkMastery: 6,
-    portrait: darkknightportrait,
     portraitFace: darkknightface,
     removedAttack: 0,
     removedDefense: 0,
@@ -349,9 +297,7 @@ export const lostGalleryData: Array<Unit> = [
     weaknessStatus: false,
     defenseStatus: 0,
     frenzyStatus: 0,
-    soundAttack: attackSword,
-    soundHitted: hittedDarkKnight,
-    soundDeath: deathDarkKnight,
+    sounds: DARK_KNIGHT_SOUNDS,
     skills: [attack, drainLife, vulnerability],
     level: 'lostGalleryEnemies',
   },

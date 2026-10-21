@@ -7,7 +7,7 @@ import { SpriteAnimationState } from './types';
  * for a unit based on the real-time battle phase, turn, and vitals.
  */
 export const useUnitAnimationState = (
-  unit: Player | Unit,
+  unit: Player | Unit | string,
   isEnemy: boolean,
   forcedState?: SpriteAnimationState
 ): SpriteAnimationState => {
@@ -20,6 +20,7 @@ export const useUnitAnimationState = (
   const boardPlayer = useBattleStore((state) => state.boardPlayer);
 
   if (forcedState) return forcedState;
+  if (typeof unit === 'string') return 'idle';
 
   // 1. Death State
   if (unit.health <= 0) {

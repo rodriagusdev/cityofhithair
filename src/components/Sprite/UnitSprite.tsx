@@ -8,11 +8,13 @@ import {
 import { useBattleStore } from '../../stores';
 
 interface UnitSpriteProps {
-  unit: Player | Unit;
+  unit: Player | Unit | string;
   isEnemy?: boolean;
   state?: SpriteAnimationState;
   onClick?: () => void;
   className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'hero' | 'board';
+  flip?: boolean;
 }
 
 export const UnitSprite: React.FC<UnitSpriteProps> = ({
@@ -21,22 +23,32 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
   state,
   onClick,
   className = '',
+  size = 'board',
+  flip,
 }) => {
   const spriteDef = getSpriteDefinitionForUnit(unit);
   const activeState = useUnitAnimationState(unit, isEnemy, state);
   const parryState = useBattleStore((state) => state.parryState);
 
+  const unitName =
+    typeof unit === 'string'
+      ? spriteDef?.name || unit
+      : unit.name;
+
   // If no sprite definition exists for this unit, seamlessly render fallback portrait
   if (!spriteDef) {
+    const portraitSrc = typeof unit === 'string' ? '' : unit.portraitFace;
     return (
       <img
-        src={unit.portrait}
-        alt={unit.name}
+        src={portraitSrc}
+        alt={unitName}
         onClick={onClick}
-        className={`w-36 h-52 md:w-44 md:h-60 object-cover rounded-full border-2 p-1.5 shadow-2xl transition-all duration-200 cursor-pointer ${isEnemy
+        style={isEnemy ? { transform: 'scaleX(-1)' } : undefined}
+        className={`w-36 h-36 md:w-44 md:h-44 object-cover rounded-full border-2 p-1.5 shadow-2xl transition-all duration-200 cursor-pointer ${
+          isEnemy
             ? 'border-red-900/80 bg-stone-950 hover:border-red-600 hover:ring-2 hover:ring-red-600/40'
             : 'border-stone-700 bg-stone-950 hover:border-red-700 hover:ring-2 hover:ring-red-800/40'
-          } ${className}`}
+        } ${className}`}
       />
     );
   }
@@ -68,7 +80,14 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
 
   // Facing direction: Player faces right towards enemy, Enemy faces left towards player
   const defaultFacingRight = (spriteDef.defaultFacing || 'right') === 'right';
-  const shouldFlip = isEnemy ? defaultFacingRight : !defaultFacingRight;
+  const shouldFlip =
+    flip !== undefined
+      ? flip
+      : size === 'hero'
+        ? false
+        : isEnemy
+          ? defaultFacingRight
+          : !defaultFacingRight;
 
   // Procedural combat motion class when a dedicated sprite sheet is not yet provided
   let proceduralMotion = '';
@@ -101,6 +120,31 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
     }
   }
 
+  // Container & frame sizing based on size prop
+  let containerSizeClass =
+    'relative w-100 h-100 rounded-full transition-all duration-200 cursor-pointer flex flex-col items-center justify-end overflow-hidden select-none';
+  let frameSizeClass = 'w-80 h-80 mb-1';
+
+  if (size === 'hero') {
+    containerSizeClass =
+      'relative w-full h-full flex flex-col items-center justify-center overflow-hidden select-none';
+    frameSizeClass = 'w-36 h-36 sm:w-[168px] sm:h-[168px]';
+  } else if (size === 'sm') {
+    containerSizeClass =
+      'relative w-24 h-24 flex flex-col items-center justify-center overflow-hidden select-none';
+    frameSizeClass = 'w-24 h-24';
+  } else if (size === 'md') {
+    containerSizeClass =
+      'relative w-36 h-36 flex flex-col items-center justify-center overflow-hidden select-none';
+    frameSizeClass = 'w-36 h-36';
+  } else if (size === 'lg') {
+    containerSizeClass =
+      'relative w-48 h-48 flex flex-col items-center justify-center overflow-hidden select-none';
+    frameSizeClass = 'w-48 h-48';
+  }
+
+  const healthKey = typeof unit === 'string' ? 'hero' : unit.health;
+
   return (
     <div
       onClick={onClick}
@@ -111,16 +155,18 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
           onClick?.();
         }
       }}
-      className={`relative w-100 h-100 rounded-full transition-all duration-200 cursor-pointer flex flex-col items-center justify-end overflow-hidden select-none  
-        ${isEnemy
-          ? 'border-transparent border-0 bg-transparent'
-          : 'border-transparent border-0 bg-transparent'
-        } ${className}`}
-      title={`${unit.name} (${activeState})`}
+      className={`${containerSizeClass} ${
+        size === 'board'
+          ? isEnemy
+            ? 'border-transparent border-0 bg-transparent'
+            : 'border-transparent border-0 bg-transparent'
+          : ''
+      } ${className}`}
+      title={`${unitName} (${activeState})`}
     >
       {/* Sprite Animation Frame Wrapper */}
       <div
-        className={`relative z-10 w-80 h-80 overflow-hidden mb-1 flex items-center justify-center ${proceduralMotion}`}
+        className={`relative z-10 overflow-hidden flex items-center justify-center ${frameSizeClass} ${proceduralMotion}`}
       >
         <div
           className="w-full h-full relative"
@@ -131,13 +177,13 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
           <img
             key={
               activeState === 'hit' || activeState === 'hurt'
-                ? `${unit.name}-hit-${unit.health}-${effectiveConfig.sheetUrl}`
+                ? `${unitName}-hit-${healthKey}-${effectiveConfig.sheetUrl}`
                 : activeState === 'parry' || activeState === 'defend'
-                  ? `${unit.name}-parry-${parryState.parriesLanded}-${effectiveConfig.sheetUrl}`
-                  : `${unit.name}-${activeState}-${effectiveConfig.sheetUrl}`
+                  ? `${unitName}-parry-${parryState.parriesLanded}-${effectiveConfig.sheetUrl}`
+                  : `${unitName}-${activeState}-${effectiveConfig.sheetUrl}`
             }
             src={effectiveConfig.sheetUrl}
-            alt={`${unit.name} ${activeState}`}
+            alt={`${unitName} ${activeState}`}
             style={{
               width: `${frameCount * 100}%`,
               height: '100%',
@@ -154,7 +200,7 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
       </div>
 
       {/* State Badge overlay during active combat actions */}
-      {activeState !== 'idle' && (
+      {activeState !== 'idle' && size === 'board' && (
         <div className="absolute top-2 px-2 py-0.5 rounded bg-stone-950/90 border border-stone-700/80 text-[9px] font-cinzel font-bold text-amber-300 uppercase tracking-widest pointer-events-none shadow z-20">
           {activeState === 'ready' && '⚔ Windup'}
           {activeState === 'attack' && '⚔ Attack'}
