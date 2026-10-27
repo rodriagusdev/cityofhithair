@@ -40,7 +40,7 @@ export const NextLevel = () => {
         </span>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col gap-1.5 overflow-y-auto custom-scrollbar pr-1">
+      <div className="flex-1 min-h-0 flex flex-col gap-1.5 overflow-y-auto overflow-x-hidden px-3.5 py-1.5 custom-scrollbar">
         {waypoints.map((wp) => {
           let status: 'current' | 'accessible' | 'locked' = 'locked';
           if (wp.isCurrent) status = 'current';

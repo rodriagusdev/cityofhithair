@@ -150,36 +150,76 @@
 
 /* Darkest Dungeon Combat Clash Positions - Point-blank at arm's length */
 .combat-clash-hero-strike {
-  transform: translateY(7.5rem) scale(1.28);
+  transform: translateY(4.5rem) scale(1.15);
 }
 @media (min-width: 768px) {
+  .combat-clash-hero-strike {
+    transform: translateX(calc(24vw - 20px)) translateY(0) scale(1.16);
+  }
+}
+@media (min-width: 1024px) {
+  .combat-clash-hero-strike {
+    transform: translateX(calc(30vw - 44px)) translateY(0) scale(1.22);
+  }
+}
+@media (min-width: 1440px) {
   .combat-clash-hero-strike {
     transform: translateX(calc(37.5vw - 144px)) translateY(0) scale(1.28);
   }
 }
 
 .combat-clash-enemy-receive {
-  transform: translateY(-2.5rem) scale(1.12);
+  transform: translateY(-1.5rem) scale(1.06);
 }
 @media (min-width: 768px) {
+  .combat-clash-enemy-receive {
+    transform: translateX(calc(-10vw + 10px)) translateY(0) scale(1.06);
+  }
+}
+@media (min-width: 1024px) {
+  .combat-clash-enemy-receive {
+    transform: translateX(calc(-11.5vw + 20px)) translateY(0) scale(1.08);
+  }
+}
+@media (min-width: 1440px) {
   .combat-clash-enemy-receive {
     transform: translateX(calc(-12.5vw + 48px)) translateY(0) scale(1.12);
   }
 }
 
 .combat-clash-enemy-strike {
-  transform: translateY(-7.5rem) scale(1.28);
+  transform: translateY(-4.5rem) scale(1.15);
 }
 @media (min-width: 768px) {
+  .combat-clash-enemy-strike {
+    transform: translateX(calc(-24vw + 20px)) translateY(0) scale(1.16);
+  }
+}
+@media (min-width: 1024px) {
+  .combat-clash-enemy-strike {
+    transform: translateX(calc(-30vw + 44px)) translateY(0) scale(1.22);
+  }
+}
+@media (min-width: 1440px) {
   .combat-clash-enemy-strike {
     transform: translateX(calc(-37.5vw + 144px)) translateY(0) scale(1.28);
   }
 }
 
 .combat-clash-hero-receive {
-  transform: translateY(2.5rem) scale(1.12);
+  transform: translateY(1.5rem) scale(1.06);
 }
 @media (min-width: 768px) {
+  .combat-clash-hero-receive {
+    transform: translateX(calc(10vw - 10px)) translateY(0) scale(1.06);
+  }
+}
+@media (min-width: 1024px) {
+  .combat-clash-hero-receive {
+    transform: translateX(calc(11.5vw - 20px)) translateY(0) scale(1.08);
+  }
+}
+@media (min-width: 1440px) {
   .combat-clash-hero-receive {
     transform: translateX(calc(12.5vw - 48px)) translateY(0) scale(1.12);
   }

@@ -94,15 +94,17 @@ export interface ItemLoot {
   image: string;
 }
 
-export type DialogOption = {
-  createDialog: () => void;
+export * from './dialog';
+
+export type LegacyDialogOption = {
+  createDialog?: () => void;
   text: string;
 };
 
 export interface Dialog {
   name: string;
   portrait: string;
-  options: Array<DialogOption>;
+  options: Array<LegacyDialogOption>;
   text: string;
 }
 

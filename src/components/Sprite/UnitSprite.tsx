@@ -44,7 +44,7 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
         alt={unitName}
         onClick={onClick}
         style={isEnemy ? { transform: 'scaleX(-1)' } : undefined}
-        className={`w-36 h-36 md:w-44 md:h-44 object-cover rounded-full border-2 p-1.5 shadow-2xl transition-all duration-200 cursor-pointer ${
+        className={`w-[134px] h-[134px] sm:w-[172px] sm:h-[172px] md:w-48 md:h-48 lg:w-[212px] lg:h-[212px] xl:w-[230px] xl:h-[230px] object-cover rounded-full border-2 p-1.5 shadow-2xl transition-all duration-200 cursor-pointer ${
           isEnemy
             ? 'border-red-900/80 bg-stone-950 hover:border-red-600 hover:ring-2 hover:ring-red-600/40'
             : 'border-stone-700 bg-stone-950 hover:border-red-700 hover:ring-2 hover:ring-red-800/40'
@@ -120,10 +120,11 @@ export const UnitSprite: React.FC<UnitSpriteProps> = ({
     }
   }
 
-  // Container & frame sizing based on size prop
+  // Container & frame sizing based on size prop (increased by 20% for board combat)
   let containerSizeClass =
-    'relative w-100 h-100 rounded-full transition-all duration-200 cursor-pointer flex flex-col items-center justify-end overflow-hidden select-none';
-  let frameSizeClass = 'w-80 h-80 mb-1';
+    'relative w-[250px] h-[250px] sm:w-[308px] sm:h-[308px] md:w-[346px] md:h-[346px] lg:w-96 lg:h-96 xl:w-[460px] xl:h-[460px] 2xl:w-[480px] 2xl:h-[480px] rounded-full transition-all duration-200 cursor-pointer flex flex-col items-center justify-end overflow-hidden select-none';
+  let frameSizeClass =
+    'w-[212px] h-[212px] sm:w-[270px] sm:h-[270px] md:w-[308px] md:h-[308px] lg:w-[346px] lg:h-[346px] xl:w-96 xl:h-96 2xl:w-[400px] 2xl:h-[400px] mb-1';
 
   if (size === 'hero') {
     containerSizeClass =

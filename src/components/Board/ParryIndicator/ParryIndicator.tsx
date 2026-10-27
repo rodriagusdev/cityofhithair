@@ -70,7 +70,7 @@ export const ParryIndicator = () => {
     <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-auto">
       {/* Gothic Telegraph Banner */}
       <div
-        className={`absolute -top-10 px-2.5 py-1 bg-stone-950/95 border rounded shadow-xl font-cinzel text-[10px] font-bold uppercase tracking-widest whitespace-nowrap animate-pulse flex items-center gap-1.5 ${
+        className={`absolute -top-10 sm:-top-11 px-2.5 py-1 bg-stone-950/95 border rounded shadow-xl font-cinzel text-[9px] sm:text-[10px] font-bold uppercase tracking-widest whitespace-nowrap animate-pulse flex items-center gap-1.5 ${
           isSpell
             ? 'border-purple-800 text-purple-200'
             : 'border-red-900 text-white'
@@ -96,7 +96,7 @@ export const ParryIndicator = () => {
             ? 'Cannot Parry Spell (0 Spiritual Power)'
             : 'Parry Incoming Attack'
         }
-        className={`relative flex items-center justify-center w-28 h-28 rounded-full bg-stone-950/90 border-2 transition-all duration-150 ${
+        className={`relative flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-stone-950/90 border-2 transition-all duration-150 ${
           isSpellBlocked
             ? 'border-purple-950/80 opacity-60 cursor-not-allowed shadow-none'
             : parryState.wasParried

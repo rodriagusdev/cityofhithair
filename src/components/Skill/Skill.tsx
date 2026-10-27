@@ -45,13 +45,13 @@ const Skill: React.FC<Props> = ({ skill, hotkey }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center group/skill">
-      {/* Skill Icon Button */}
+    <div className="relative flex flex-col items-center group/skill shrink-0">
+      {/* Skill Icon Button - Fixed size across all devices matching Skeleton */}
       <button
         type="button"
         onClick={() => handleSkillAction(skill.name)}
         aria-label={skill.name}
-        className={`relative p-1 bg-stone-900 border transition-all cursor-pointer shadow-md ${
+        className={`relative w-14 h-14 shrink-0 flex items-center justify-center p-1 bg-stone-900 border transition-all cursor-pointer shadow-md ${
           isSelected
             ? 'border-amber-400 ring-2 ring-amber-400/60 scale-105'
             : 'border-stone-700 hover:border-amber-500/70 hover:scale-105'
@@ -60,7 +60,7 @@ const Skill: React.FC<Props> = ({ skill, hotkey }) => {
         <img
           src={skill.image}
           alt={skill.name}
-          className="w-10 h-10 md:w-12 md:h-12 object-contain"
+          className="w-12 h-12 object-contain shrink-0 pointer-events-none"
         />
 
         {/* Keyboard Hotkey Badge */}

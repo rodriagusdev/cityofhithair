@@ -8,7 +8,7 @@ const MusicPlayer = ({ track }: Props) => {
   const { musicIsPlaying, handleOnClick } = useMusicPlayer({ track });
 
   return (
-    <div className="fixed top-3 left-3 z-40">
+    <div className="fixed top-3 left-3 z-20">
       <button
         onClick={handleOnClick}
         type="button"

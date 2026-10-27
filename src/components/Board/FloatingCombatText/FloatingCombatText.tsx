@@ -25,7 +25,7 @@ export const FloatingCombatText: React.FC<Props> = ({ isEnemy }) => {
   if (activeTexts.length === 0) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-40">
+    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-60">
       {activeTexts.map((item) => {
         let colorClasses = 'text-rose-400 drop-shadow-[0_2px_10px_rgba(244,63,94,0.8)]';
 
@@ -40,7 +40,7 @@ export const FloatingCombatText: React.FC<Props> = ({ isEnemy }) => {
         return (
           <div
             key={item.id}
-            className={`font-cinzel text-xl md:text-2xl font-black tracking-wider uppercase select-none animate-float-combat-text ${colorClasses}`}
+            className={`font-cinzel text-lg sm:text-xl md:text-2xl font-black tracking-wider uppercase select-none animate-float-combat-text ${colorClasses}`}
           >
             {item.text}
           </div>

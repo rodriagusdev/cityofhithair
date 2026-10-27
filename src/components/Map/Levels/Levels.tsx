@@ -1,14 +1,13 @@
 import { useEffect } from 'react';
 import ShowLoot from '../../Announcers/ShowLoot';
-import { useLevelsStore } from '../../../stores';
+import { useDialogStore, useLevelsStore } from '../../../stores';
 import { Unit } from '../../../types';
 import { Enemy } from '../../Enemy';
-import { DialogNicolai } from '../../DialogNicolai';
+import { Dialog } from '../../Dialog';
 import { Centerer } from '../../Centerer';
 import werewolfHowl from '../../../assets/sound/werewolfhowl.ogg';
 import { soundEngine } from '../../../services/soundEngine';
 import { getLevelDefinition } from '../../../data/levels';
-
 import { AtmosphereParticles } from '../../Atmosphere';
 
 const playHowl = () => {
@@ -20,6 +19,7 @@ export const Levels = () => {
   const enemiesByLevel = useLevelsStore((state) => state.enemiesByLevel);
   const cannibalDied = useLevelsStore((state) => state.cannibalDied);
   const { updateCannibalDied } = useLevelsStore();
+  const startDialog = useDialogStore((state) => state.startDialog);
 
   const currentDef = getLevelDefinition(currentLevelId);
   const enemies = enemiesByLevel[currentLevelId] ?? [];
@@ -35,6 +35,13 @@ export const Levels = () => {
       playHowl();
     }
   }, [currentLevelId, enemies.length, cannibalDied, updateCannibalDied]);
+
+  // Nicolai Encounter trigger
+  useEffect(() => {
+    if (currentDef?.specialEvent === 'dialog_nicolai') {
+      startDialog('nicolai');
+    }
+  }, [currentDef?.specialEvent, startDialog]);
 
   if (!currentDef || currentDef.isHub) {
     return null;
@@ -53,7 +60,7 @@ export const Levels = () => {
           <AtmosphereParticles levelIdOverride={currentLevelId} />
           <div className="relative z-10 w-full flex justify-center">
             <Centerer>
-              <DialogNicolai />
+              <Dialog />
             </Centerer>
           </div>
         </div>

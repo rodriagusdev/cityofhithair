@@ -1,30 +1,23 @@
 import React from 'react';
 import { useDialogStore } from '../../stores';
-import { Dialog, DialogOption } from '../../types';
 
 interface Props {
   NPC: {
-    dialogOptions: Array<DialogOption>;
+    id?: string;
     name: string;
-    portrait: string;
+    portrait?: string;
     face: string;
     x: number | string;
     y: number | string;
   };
 }
 
-const Npc: React.FC<Props> = ({ NPC }) => {
-  const { updateDialogStatus, updateDialog } = useDialogStore();
+export const Npc: React.FC<Props> = ({ NPC }) => {
+  const startDialog = useDialogStore((state) => state.startDialog);
 
   const startConversation = () => {
-    const dialog: Dialog = {
-      name: NPC.name,
-      portrait: NPC.portrait,
-      options: NPC.dialogOptions,
-      text: '',
-    };
-    updateDialog(dialog);
-    updateDialogStatus();
+    const treeId = NPC.id || NPC.name.toLowerCase();
+    startDialog(treeId);
   };
 
   return (

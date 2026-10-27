@@ -1,8 +1,9 @@
+import React from 'react';
 import { useDialogStore } from '../../stores';
 
-const Note = () => {
+export const Note: React.FC = () => {
   const note = useDialogStore((state) => state.note);
-  const { updateNoteStatus } = useDialogStore();
+  const closeNote = useDialogStore((state) => state.closeNote);
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-stone-950/95 backdrop-blur-md border-2 border-stone-800 rounded-xl shadow-2xl max-w-md w-full text-stone-200">
@@ -18,7 +19,7 @@ const Note = () => {
 
       <button
         type="button"
-        onClick={updateNoteStatus}
+        onClick={closeNote}
         className="mt-2 w-full py-2 px-4 font-cinzel text-xs tracking-widest font-bold uppercase text-stone-300 bg-stone-900 hover:bg-red-950 hover:text-white border border-stone-700 hover:border-red-800 rounded-md transition-all cursor-pointer shadow-sm text-center"
       >
         Close Manuscript

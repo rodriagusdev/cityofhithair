@@ -1,5 +1,6 @@
 import { useAnnouncerStore, useBattleStore } from '../../stores';
 import { Centerer } from '../Centerer';
+import LootItemCard from './LootItemCard';
 
 interface Props {
   text: string;
@@ -24,16 +25,9 @@ const ShowLoot = ({ text }: Props) => {
               {text}
             </h3>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 p-3 bg-stone-900/80 border border-stone-800 rounded-lg w-full">
+            <div className="flex flex-wrap items-center justify-center gap-4 p-3.5 bg-stone-900/80 border border-stone-800 rounded-lg w-full">
               {getLoot.map((loot, index) => (
-                <div key={index} className="flex flex-col items-center gap-1">
-                  <img
-                    src={loot.image}
-                    alt={loot.name}
-                    className="w-12 h-12 object-contain p-1.5 bg-stone-950 border border-stone-700 rounded-lg shadow"
-                  />
-                  <p className="text-xs text-stone-300 font-semibold">{loot.name}</p>
-                </div>
+                <LootItemCard key={`${loot.name}-${index}`} loot={loot} />
               ))}
             </div>
 
